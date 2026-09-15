@@ -5,10 +5,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.app import ledger
-from backend.app.adapters.estate import get_alert, load_estate_file
+from backend.app.adapters.estate import get_alert, load_estate_file, load_mitre_excerpt
 from backend.app.config import get_settings
 from backend.app.db import get_db
-from backend.app.models import AgentDeployment, ApprovalRequest, ControlPlane, LedgerEntry, WorkflowRun
+from backend.app.models import AgentDeployment, ApprovalRequest, Backup, ControlPlane, Endpoint, LedgerEntry, WorkflowRun
 from backend.app.policy.linter import lint
 from backend.app.rbac import get_principal, require
 from backend.app.schemas import (
@@ -42,6 +42,47 @@ def list_alerts(principal: Principal = Depends(get_principal)):
     require(principal, "read")
     alerts = [a for a in load_estate_file()["alerts"] if a["tenant_id"] == principal.tenant_id]
     return {"alerts": alerts}
+
+
+@router.get("/estate")
+def get_estate(db: Session = Depends(get_db), principal: Principal = Depends(get_principal)):
+    """Tenant-scoped estate the agents are allowed to see — not a fake console shell."""
+    require(principal, "read")
+    raw = load_estate_file()
+    tenant = next((t for t in raw["tenants"] if t["id"] == principal.tenant_id), None)
+    if tenant is None:
+        raise HTTPException(404, "Unknown tenant")
+    endpoints = db.scalars(select(Endpoint).where(Endpoint.tenant_id == principal.tenant_id)).all()
+    backups = db.scalars(select(Backup).where(Backup.tenant_id == principal.tenant_id)).all()
+    alerts = [a for a in raw["alerts"] if a["tenant_id"] == principal.tenant_id]
+    return {
+        "tenant": tenant,
+        "endpoints": [
+            {
+                "id": e.id,
+                "hostname": e.hostname,
+                "role": e.role,
+                "tags": e.tags or [],
+                "isolated": e.isolated,
+                "health": e.health,
+            }
+            for e in endpoints
+        ],
+        "backups": [
+            {
+                "id": b.id,
+                "endpoint_id": b.endpoint_id,
+                "taken_at": b.taken_at.isoformat(),
+                "integrity_verified": b.integrity_verified,
+                "encrypted": b.encrypted,
+                "age_hours": b.age_hours,
+                "clean": b.integrity_verified and not b.encrypted,
+            }
+            for b in backups
+        ],
+        "alerts": alerts,
+        "intel": load_mitre_excerpt(),
+    }
 
 
 @router.post("/runs", response_model=RunOut)

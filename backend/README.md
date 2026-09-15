@@ -306,6 +306,8 @@ Then walk the prototype: role-switch Owner / Admin / Tech / Auditor and watch RO
 | Method | Path | Intent |
 |---|---|---|
 | `GET` | `/v1/health` | LLM mode (gemini vs mock) — no auth |
+| `GET` | `/v1/estate` | Tenant endpoints, backups, alerts, MITRE excerpt |
+| `GET` | `/v1/estate/alerts` | Tenant alerts only |
 | `POST` | `/v1/runs` | Start a graph run from an alert |
 | `GET` | `/v1/runs` | Tenant-scoped history |
 | `GET` | `/v1/oversight` | Pending HITL |
