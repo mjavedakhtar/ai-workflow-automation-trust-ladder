@@ -23,21 +23,19 @@ Workflow builders define *what* an agent does. This project is the layer they us
 ## Run the backend (fork this)
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r backend/requirements-dev.txt
 cp .env.example .env          # paste GOOGLE_API_KEY for live Gemini; omit it to use the mock LLM
-export PYTHONPATH=.
-uvicorn backend.app.main:app --reload --port 8000
+uv sync --all-groups
+uv run uvicorn backend.app.main:app --reload --port 8000
 ```
 
 Open http://127.0.0.1:8000/docs and http://127.0.0.1:8000/prototype/
 
 ```bash
 docker compose up --build     # same API on :8000
-pytest -q                     # policy, RBAC, ledger, workflow
+uv run pytest -q              # policy, RBAC, ledger, workflow
 ```
 
-Full API walkthrough, headers, and security notes: [`backend/README.md`](backend/README.md).
+Architecture, diagrams, and the full walkthrough: [`backend/README.md`](backend/README.md).
 
 Demo identity (replace before production): header `X-API-Key: dev-change-me` plus `X-Role` (`owner` / `admin` / `tech` / `auditor`) and `X-Tenant-Id` (`northwind` / `acme` / `globex`).
 
