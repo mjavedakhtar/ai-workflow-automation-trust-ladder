@@ -1198,7 +1198,7 @@
       </div>
 
       <div class="top">
-        <div class="search">🔎 Find, ask or do anything with AI-powered search</div>
+        <div class="search" id="liveChip">🔎 Find, ask or do anything with AI-powered search</div>
         <div class="role-switch">
           <label>Viewing as</label>
           <select id="roleSel" onchange="setRole(this.value)">
@@ -1316,6 +1316,15 @@
             </div>
             <button class="btn primary" data-perm="activate" onclick="go('activate')">✦ Activate a new agent
               safely</button>
+          </div>
+          <div class="card" id="demoFire" style="margin-top:18px" data-perm="trigger">
+            <h3 style="margin-top:0">Fire a live demo alert</h3>
+            <p style="color:var(--muted);font-size:13px;margin:0 0 12px">These hit the real LangGraph backend (Northwind). Use <b>Automation Admin</b>. Then open Oversight.</p>
+            <div class="row wrap">
+              <button class="btn primary sm" onclick="fireAlert('A-8841')">A-8841 workstation ransomware</button>
+              <button class="btn sm" onclick="fireAlert('A-8846')">A-8846 domain controller (blocked)</button>
+              <button class="btn sm" onclick="fireAlert('A-8850')">A-8850 injected ticket text</button>
+            </div>
           </div>
         </section>
 
@@ -1452,7 +1461,7 @@ Restore-Backup -SnapshotId $clean</textarea>
                 over the last <b>90 days of real ransomware incidents</b> for this tenant. This is the single most
                 trust-building moment in the flow — proof, not promises.</p>
               <div class="row spread" style="margin:10px 0 6px">
-                <div><b>62</b> historical incidents found for Northwind Ltd</div>
+                <div><b id="dryCount">62</b> historical incidents found for this tenant</div>
                 <button class="btn primary sm" id="simBtn" onclick="runSim()">▶ Run dry-run simulation</button>
               </div>
               <div class="sim-bar">
@@ -1461,20 +1470,20 @@ Restore-Backup -SnapshotId $clean</textarea>
               <div id="simResult" style="display:none">
                 <div class="grid g4" style="margin:14px 0">
                   <div class="card stat" style="box-shadow:none">
-                    <div class="n" style="color:var(--green)">58</div>
-                    <div class="l">Matched the technician's action</div>
+                    <div class="n" style="color:var(--green)" id="dryAgreeN">58</div>
+                    <div class="l">Matched labelled history</div>
                   </div>
                   <div class="card stat" style="box-shadow:none">
-                    <div class="n" style="color:var(--amber)">3</div>
-                    <div class="l">Would have escalated (unsure)</div>
+                    <div class="n" style="color:var(--amber)" id="dryReplayN">3</div>
+                    <div class="l">Incidents replayed</div>
                   </div>
                   <div class="card stat" style="box-shadow:none">
-                    <div class="n" style="color:var(--red)">1</div>
-                    <div class="l">Would have diverged ⚠</div>
+                    <div class="n" style="color:var(--red)" id="dryBlockN">1</div>
+                    <div class="l">Policy blocks / divergences</div>
                   </div>
                   <div class="card stat" style="box-shadow:none">
-                    <div class="n">93.5%</div>
-                    <div class="l">Agreement with humans</div>
+                    <div class="n" id="dryPct">93.5%</div>
+                    <div class="l">Agreement with labels</div>
                   </div>
                 </div>
                 <div class="note danger">⚠ <b>1 divergence worth your attention.</b> On incident <span
@@ -1568,7 +1577,7 @@ Restore-Backup -SnapshotId $clean</textarea>
                   <div class="kv"><span class="k">Guardrails active</span><span class="v" id="sumGuards">4 of 5</span>
                   </div>
                   <div class="kv"><span class="k">Dry-run agreement</span><span class="v"
-                      style="color:var(--green)">93.5%</span></div>
+                      style="color:var(--green)" id="sumDry">93.5%</span></div>
                   <div class="kv"><span class="k">Autonomy</span><span class="v" id="sumLvl">L2 · Approve-to-act</span>
                   </div>
                   <div class="kv"><span class="k">Rollback</span><span class="v" style="color:var(--green)">Enabled (all
@@ -1650,14 +1659,14 @@ Restore-Backup -SnapshotId $clean</textarea>
           </p>
 
           <div class="grid g2">
-            <div class="card">
+            <div class="card" id="historyDetail">
               <div class="row spread">
-                <h2 style="margin:0">Run <span class="mono">#EXR-4471</span></h2><span class="badge b-green">✓ Completed
+                <h2 style="margin:0">Run <span class="mono" id="histRunId">#EXR-4471</span></h2><span class="badge b-green" id="histBadge">✓ Completed
                   · reversible</span>
               </div>
-              <div style="color:var(--muted);font-size:12px;margin:6px 0 16px">Ransomware → Isolate &amp; Restore ·
-                Northwind Ltd · 2026-07-16 03:12 UTC</div>
-              <div class="tl">
+              <div style="color:var(--muted);font-size:12px;margin:6px 0 16px" id="histMeta">Ransomware → Isolate &amp; Restore ·
+                Northwind Ltd</div>
+              <div class="tl" id="histTimeline">
                 <div class="tl-item ok">
                   <div class="tm">03:12:04 · Trigger</div>
                   <div class="hd">EDR flagged ransomware behaviour on WKS-Finance-07</div>
@@ -1701,8 +1710,9 @@ Restore-Backup -SnapshotId $clean</textarea>
               </div>
             </div>
             <div>
-              <div class="card" style="margin-bottom:16px">
+              <div class="card" style="margin-bottom:16px" id="acctCard">
                 <h3>Accountability record</h3>
+                <div id="acctBody">
                 <div class="kv"><span class="k">Triage decision by</span><span class="v">Triage Agent v1.4</span></div>
                 <div class="kv"><span class="k">Action proposed by</span><span class="v">Remediation Agent v2.1</span>
                 </div>
@@ -1714,17 +1724,18 @@ Restore-Backup -SnapshotId $clean</textarea>
                 <div class="kv"><span class="k">Reversible</span><span class="v" style="color:var(--green)">Yes</span>
                 </div>
                 <div class="kv"><span class="k">Integrity</span><span class="v mono">sha256 ✓ signed</span></div>
+                </div>
               </div>
               <div class="card">
                 <h3>Undo / rollback</h3>
                 <p style="color:var(--muted);font-size:13px;margin-top:0">Every agent action is captured as a reversible
                   transaction. If the restore caused an issue, roll the endpoint back to its pre-action state in one
                   step.</p>
-                <button class="btn danger" data-perm="rollback"
-                  onclick="showToast('Rollback initiated — endpoint reverting to pre-action snapshot (simulated)')">↺
+                <button class="btn danger" data-perm="rollback" id="btnRollback"
+                  onclick="rollbackLive()">↺
                   Roll back this run</button>
-                <button class="btn" data-perm="export"
-                  onclick="showToast('Audit record exported as signed PDF (simulated)')">⤓ Export for auditor</button>
+                <button class="btn" data-perm="export" id="btnExport"
+                  onclick="exportLive()">⤓ Export for auditor</button>
               </div>
             </div>
           </div>
@@ -1742,7 +1753,7 @@ Restore-Backup -SnapshotId $clean</textarea>
                   <th>When</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="recentRunsBody">
                 <tr>
                   <td class="mono">#EXR-4471</td>
                   <td>Ransomware → Isolate &amp; Restore</td>
@@ -1851,20 +1862,18 @@ Restore-Backup -SnapshotId $clean</textarea>
 
           <div class="card" style="margin-top:16px">
             <h2>Eval suite — runs on every prompt/model change before it reaches production</h2>
-            <div class="grid g3">
+            <div class="grid g3" id="evalSuite">
               <div>
-                <div class="kv"><span class="k">Golden-set accuracy</span><span class="badge b-green">98.2%</span></div>
-                <div class="kv"><span class="k">(62 labelled incidents)</span><span class="v mono">pass</span></div>
+                <div class="kv"><span class="k">Golden-set cases</span><span class="badge b-green" id="evalGolden">—</span></div>
+                <div class="kv"><span class="k">Labelled eval library</span><span class="v mono" id="evalGoldenD">pass</span></div>
               </div>
               <div>
-                <div class="kv"><span class="k">Destructive-action safety</span><span class="badge b-green">0 false
-                    isolations</span></div>
-                <div class="kv"><span class="k">Critical-infra exclusion</span><span class="v mono">pass</span></div>
+                <div class="kv"><span class="k">Destructive-action safety</span><span class="badge b-green" id="evalSafety">—</span></div>
+                <div class="kv"><span class="k">Critical-infra exclusion</span><span class="v mono" id="evalSafetyD">pass</span></div>
               </div>
               <div>
-                <div class="kv"><span class="k">Prompt-injection resistance</span><span class="badge b-green">24/24
-                    blocked</span></div>
-                <div class="kv"><span class="k">Adversarial ticket text</span><span class="v mono">pass</span></div>
+                <div class="kv"><span class="k">Prompt-injection resistance</span><span class="badge b-green" id="evalInj">—</span></div>
+                <div class="kv"><span class="k">Adversarial ticket text</span><span class="v mono" id="evalInjD">pass</span></div>
               </div>
             </div>
             <div class="note" style="margin:14px 0 0">🔁 <b>The loop closes here:</b> rejections from the Oversight
@@ -1906,13 +1915,13 @@ Restore-Backup -SnapshotId $clean</textarea>
   <script>
 /* ================= ROLE / RBAC ================= */
 const ROLES = {
-  owner:  {name:'MSP Owner', av:'JO', kill:'global', activate:false, guardEdit:false, approve:false, promote:true,  rollback:true, export:true,
+  owner:  {name:'MSP Owner', av:'JO', user:'sofia', kill:'global', activate:false, guardEdit:false, approve:false, promote:true,  rollback:true, export:true, trigger:false,
     note:"👑 <b>MSP Owner view.</b> You see the commercial picture (ROI in €) and can pause everything in an emergency, but you don't hand-edit guardrails or approve individual tickets — that's your team's job. Oversight is read-only for you."},
-  admin:  {name:'Automation Admin', av:'AA', kill:'global', activate:true, guardEdit:true, approve:true, promote:true, rollback:true, export:true,
+  admin:  {name:'Automation Admin', av:'AA', user:'arjun', kill:'global', activate:true, guardEdit:true, approve:true, promote:true, rollback:true, export:true, trigger:true,
     note:"🛠 <b>Automation Admin view.</b> You configure agents end-to-end: build guardrails, run dry-runs, promote autonomy rungs, approve actions, and hold the global kill switch. The most powerful role."},
-  tech:   {name:'L2 Technician', av:'TK', kill:'scoped', activate:false, guardEdit:false, approve:true, promote:false, rollback:false, export:false,
+  tech:   {name:'L2 Technician', av:'TK', user:'mia', kill:'scoped', activate:false, guardEdit:false, approve:true, promote:false, rollback:false, export:false, trigger:false,
     note:"🎧 <b>L2 Technician view.</b> You live in the oversight inbox — approve or reject agent actions. You see <b>accuracy</b>, not € (so you're never pressured to rubber-stamp for savings). You can pause a single agent, but not the whole fleet, and you can't change guardrails or promote agents."},
-  auditor:{name:'Compliance / Auditor', av:'CA', kill:'none', activate:false, guardEdit:false, approve:false, promote:false, rollback:false, export:true,
+  auditor:{name:'Compliance / Auditor', av:'CA', user:'david', kill:'none', activate:false, guardEdit:false, approve:false, promote:false, rollback:false, export:true, trigger:false,
     note:"🔍 <b>Compliance / Auditor view.</b> Everything is read-only. You can read and export the tamper-evident audit trail — but you cannot activate, approve, promote, or pause anything. Separation of duties by design."},
 };
 let ROLE='admin';
@@ -1923,7 +1932,7 @@ function setRole(r){
   document.getElementById('roleNote').innerHTML=R.note;
   document.querySelectorAll('[data-show]').forEach(el=>{ el.hidden = !el.dataset.show.split(' ').includes(r); });
   document.querySelectorAll('[data-perm]').forEach(el=>{
-    const ok = R[el.dataset.perm];
+    const ok = !!R[el.dataset.perm];
     el.classList.toggle('perm-locked', !ok);
     el.title = ok ? '' : 'Requires a role with '+el.dataset.perm+' permission';
   });
@@ -1937,6 +1946,7 @@ function setRole(r){
   if(R.kill==='none'){kb.hidden=true;}
   else{kb.hidden=false; kt.textContent = R.kill==='global' ? 'Pause all agents' : 'Pause this agent';}
   refreshDrawerFooter();
+  refreshLive();
 }
 function guardPerm(perm){
   if(ROLES[ROLE][perm]) return true;
@@ -1945,10 +1955,9 @@ function guardPerm(perm){
 }
 
 /* ================= KILL SWITCH ================= */
-function engageKill(){
-  if(ROLES[ROLE].kill==='none') return;
-  const scoped = ROLES[ROLE].kill==='scoped';
-  const bar=document.getElementById('killbar'); bar.hidden=false;
+function paintKill(scoped, on){
+  const bar=document.getElementById('killbar'); bar.hidden=!on;
+  if(!on) return;
   if(scoped){
     document.getElementById('killTitle').textContent='"Ransomware → Isolate & Restore" paused (scoped)';
     document.getElementById('killSub').textContent='You paused a single agent. Other agents keep running. A global pause requires an Admin or Owner.';
@@ -1956,9 +1965,28 @@ function engageKill(){
     document.getElementById('killTitle').textContent='EMERGENCY PAUSE ENGAGED — all agents halted across all tenants';
     document.getElementById('killSub').textContent='No agent can act. In-flight approvals are frozen. Platform is in read-only shadow mode until resumed.';
   }
+}
+async function engageKill(){
+  if(ROLES[ROLE].kill==='none') return;
+  const scoped = ROLES[ROLE].kill==='scoped';
+  if(LIVE){
+    try{
+      await api('/v1/kill-switch', {method:'POST', body:{scope: scoped?'workflow':'global', paused:true}});
+    }catch(e){ showToast('Kill switch failed — '+e.message); return; }
+  }
+  paintKill(scoped, true);
   showToast(scoped?'⏸ Single agent paused':'🚨 ALL agents paused');
 }
-function resumeAgents(){document.getElementById('killbar').hidden=true;showToast('▶ Agents resumed');}
+async function resumeAgents(){
+  if(LIVE){
+    try{
+      const scoped = ROLES[ROLE].kill==='scoped';
+      await api('/v1/kill-switch', {method:'POST', body:{scope: scoped?'workflow':'global', paused:false}});
+    }catch(e){ showToast('Resume failed — '+e.message); return; }
+  }
+  paintKill(false, false);
+  showToast('▶ Agents resumed');
+}
 
 /* ================= NAV ================= */
 function go(id){
@@ -1967,6 +1995,9 @@ function go(id){
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.nav===id));
   window.scrollTo(0,0);
+  if(id==='history') loadHistory();
+  if(id==='reliability') loadEvals();
+  if(id==='oversight') liveInbox();
 }
 document.querySelectorAll('.nav a').forEach(a=>a.onclick=()=>{ if(a.classList.contains('locked'))return; go(a.dataset.nav); });
 
@@ -1974,6 +2005,42 @@ document.querySelectorAll('.nav a').forEach(a=>a.onclick=()=>{ if(a.classList.co
 let tT;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3400);}
+
+const API_BASE = (() => {
+  const q = new URLSearchParams(location.search).get('api');
+  if (q) return q.replace(/\/$/, '');
+  if (location.pathname.indexOf('/prototype') === 0) return location.origin;
+  return '';
+})();
+const API_KEY = new URLSearchParams(location.search).get('key') || localStorage.getItem('TRUST_LADDER_API_KEY') || 'dev-change-me';
+let LIVE = false;
+let selectedRunId = null;
+function apiHeaders(hasBody){
+  const role = document.getElementById('roleSel')?.value || ROLE;
+  const user = (ROLES[role] && ROLES[role].user) || 'arjun';
+  const h = {'X-API-Key': API_KEY, 'X-Role': role, 'X-User-Id': user, 'X-Tenant-Id': 'northwind'};
+  if(hasBody) h['Content-Type'] = 'application/json';
+  return h;
+}
+function errDetail(data, fallback){
+  const d = data && (data.detail ?? data.message);
+  if(typeof d === 'string') return d;
+  if(Array.isArray(d)) return d.map(x => x.msg || JSON.stringify(x)).join('; ');
+  if(d && typeof d === 'object') return JSON.stringify(d);
+  return fallback;
+}
+async function api(path, opts={}){
+  const r = await fetch(API_BASE+path, {
+    method: opts.method || 'GET',
+    headers: apiHeaders(!!opts.body),
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  const text = await r.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = {detail: text}; }
+  if(!r.ok) throw new Error(errDetail(data, r.statusText));
+  return data;
+}
 
 /* ================= WIZARD ================= */
 let cur=1; const MAX=5;
@@ -2012,10 +2079,20 @@ function gToggle(i){ if(!guardPerm('guardEdit'))return; GUARDS[i].on=!GUARDS[i].
 
 /* Interactive linter */
 const FORBIDDEN=['Remove-Item','Format-Volume','rm -rf','del /','reg delete','Stop-Computer','Clear-Disk'];
-function lintScript(){
+async function lintScript(){
   const txt=document.getElementById('scriptBox').value;
-  const hit=FORBIDDEN.find(f=>txt.toLowerCase().includes(f.toLowerCase()));
   const out=document.getElementById('linterOut');
+  if(LIVE){
+    try{
+      const r = await api('/v1/policy/lint', {method:'POST', body:{script:txt}});
+      out.className='linter-out '+(r.passed?'pass':'fail');
+      out.innerHTML = r.passed
+        ? '🛡 Platform allow-list: <b>PASSED</b> — '+r.detail
+        : '⛔ Platform allow-list: <b>BLOCKED</b> — '+r.detail;
+      return;
+    }catch(e){ showToast('Lint API failed — '+e.message); }
+  }
+  const hit=FORBIDDEN.find(f=>txt.toLowerCase().includes(f.toLowerCase()));
   if(hit){
     out.className='linter-out fail';
     out.innerHTML=`⛔ Allow-list check: <b>BLOCKED</b> — found a forbidden/destructive command (<span class="mono">${hit}</span>). The platform rejects this before it can run, regardless of what the model intended. The agent must propose an allow-listed alternative or escalate to a human.`;
@@ -2031,10 +2108,29 @@ function injectBad(){
 }
 
 /* Simulation */
-function runSim(){
-  const btn=document.getElementById('simBtn'); btn.disabled=true; btn.textContent='Replaying 62 incidents…';
+async function runSim(){
+  const btn=document.getElementById('simBtn'); btn.disabled=true; btn.textContent='Replaying incidents…';
   const fill=document.getElementById('simFill'); fill.style.width='0';
   setTimeout(()=>fill.style.width='100%',50);
+  if(LIVE){
+    try{
+      const r = await api('/v1/activation/dry-run', {method:'POST', body:{}});
+      document.getElementById('dryCount').textContent = r.replayed;
+      document.getElementById('dryAgreeN').textContent = Math.round((r.agreement_pct/100)*r.replayed);
+      document.getElementById('dryReplayN').textContent = r.replayed;
+      document.getElementById('dryBlockN').textContent = r.policy_blocks;
+      document.getElementById('dryPct').textContent = r.agreement_pct+'%';
+      document.getElementById('sumDry').textContent = r.agreement_pct+'%';
+      const note = document.querySelector('#simResult .note.danger');
+      if(note && r.divergences && r.divergences[0]){
+        note.innerHTML = '⚠ <b>Policy blocked a destructive path.</b> '+r.divergences.map(d=>`<span class="mono">${d.alert_id}</span> — ${d.proposed_guardrail}`).join(' · ');
+      }
+      document.getElementById('simResult').style.display='block';
+      btn.textContent='✓ Dry-run complete'; btn.disabled=false;
+      showToast('Dry-run complete — '+r.agreement_pct+'% agreement on '+r.replayed+' labelled incidents');
+      return;
+    }catch(e){ showToast('Dry-run failed — '+e.message); }
+  }
   setTimeout(()=>{document.getElementById('simResult').style.display='block';btn.textContent='✓ Dry-run complete';btn.disabled=false;showToast('Dry-run complete — 93.5% agreement with your technicians');},1300);
 }
 
@@ -2044,7 +2140,31 @@ const LVL_TXT={L0:'L0 · Shadow',L1:'L1 · Suggest',L2:'L2 · Approve-to-act',L3
 function selLvl(el){document.querySelectorAll('.auto-lvl').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');
   chosenLvl=el.dataset.lvl;document.getElementById('sumLvl').textContent=LVL_TXT[chosenLvl];}
 
-function activateAgent(){if(!guardPerm('activate'))return;showToast('🚀 Agent activated in canary mode — the first 10 incidents need approval');setTimeout(()=>go('oversight'),900);}
+async function activateAgent(){
+  if(!guardPerm('activate'))return;
+  if(LIVE){
+    try{
+      const body = {
+        autonomy_rung: chosenLvl,
+        canary: true,
+        guardrails: {
+          never_isolate_critical_infra: GUARDS[0].on,
+          require_verified_backup_hours: GUARDS[1].on ? 24 : 8760,
+          require_reversible: GUARDS[2].on,
+          max_isolations_per_hour: GUARDS[3].on ? 5 : 999,
+          min_confidence: 0.80,
+          block_injected_text: GUARDS[4].on
+        }
+      };
+      const r = await api('/v1/activation', {method:'POST', body});
+      showToast('🚀 Activated in '+r.status+' at '+r.rung+' — fire a demo alert from Overview');
+      setTimeout(()=>go('dash'),700);
+      return;
+    }catch(e){ showToast('Activate failed — '+e.message); return; }
+  }
+  showToast('🚀 Agent activated in canary mode — the first 10 incidents need approval');
+  setTimeout(()=>go('oversight'),900);
+}
 
 /* ================= OVERSIGHT INBOX ================= */
 const INBOX=[
@@ -2063,7 +2183,7 @@ const INBOX=[
 ];
 function confColor(l){return l==='high'?'var(--green)':l==='med'?'var(--amber)':'var(--red)';}
 function renderInbox(){
-  document.getElementById('inboxRows').innerHTML = INBOX.map(it=>{
+  document.getElementById('inboxRows').innerHTML = INBOX.length ? INBOX.map(it=>{
     const isTri=it.type==='triage';
     return `
    <tr class="clickable" onclick="openItem('${it.id}')">
@@ -2074,7 +2194,7 @@ function renderInbox(){
      <td><span class="badge ${it.warn?'b-red':'b-green'}">${it.guards}</span></td>
      <td>${it.wait}</td>
      <td><span class="btn sm">Review →</span></td>
-   </tr>`;}).join('');
+   </tr>`;}).join('') : '<tr><td colspan="6" style="color:var(--muted);padding:16px">No pending approvals. Fire a demo alert from Overview.</td></tr>';
   document.getElementById('inboxCount').textContent=INBOX.length;
   document.getElementById('dPending').textContent=INBOX.length;
 }
@@ -2114,60 +2234,165 @@ function approveItem(){if(!guardPerm('approve'))return;closeDrawer();dropItem();
 function rejectItem(){if(!guardPerm('approve'))return;closeDrawer();dropItem();showToast('✕ Rejected — reason captured as training signal for the next eval');}
 function dropItem(){if(curItem){const i=INBOX.findIndex(x=>x.id===curItem.id);if(i>-1)INBOX.splice(i,1);renderInbox();}}
 
-/* ================= LIVE API (optional) ================= */
-const API_BASE = (() => {
-  const q = new URLSearchParams(location.search).get('api');
-  if (q) return q.replace(/\/$/, '');
-  if (location.pathname.indexOf('/prototype') === 0) return location.origin;
-  return '';
-})();
-const API_KEY = new URLSearchParams(location.search).get('key') || localStorage.getItem('TRUST_LADDER_API_KEY') || 'dev-change-me';
-function apiHeaders(){
-  const role = document.getElementById('roleSel')?.value || ROLE;
-  return {'X-API-Key': API_KEY, 'X-Role': role, 'X-User-Id': 'arjun', 'X-Tenant-Id': 'northwind', 'Content-Type': 'application/json'};
-}
 async function liveInbox(){
-  if(!API_BASE) return;
+  if(!LIVE) return;
   try{
-    const health = await fetch(API_BASE+'/v1/health').then(r=>r.json());
-    const box = await fetch(API_BASE+'/v1/oversight', {headers: apiHeaders()}).then(r=>r.json());
-    if(!box.items) return;
-    if(!box.items.length){ showToast('Live API · LLM='+(health.llm||'?')+' · no pending runs — showing demo inbox'); return; }
-    showToast('Live API · LLM='+(health.llm||'?')+' · '+box.items.length+' pending');
+    const box = await api('/v1/oversight');
     INBOX.length = 0;
-    box.items.forEach(it=>{
+    (box.items||[]).forEach(it=>{
       INBOX.push({
         id: it.id, type: it.kind==='triage'?'triage':'remediation',
         agent: it.kind==='triage'?'Triage Agent':'Remediation Agent',
         action: it.action, client: it.client, conf: it.conf||0, confL: (it.conf||0)>0.85?'high':(it.conf||0)>0.7?'med':'low',
         wait: 'live', guards: it.passed===false?'blocked':((it.guards||[]).filter(g=>g.passed).length+'/'+(it.guards||[]).length),
         reason: it.reasoning||'', evidence: it.evidence||[],
-        checks: (it.guards||[]).map(g=>[g.rule, g.passed?'pass':g.detail]),
+        checks: (it.guards||[]).map(g=>[g.rule, g.passed?'pass':(g.detail||'fail')]),
         warn: it.passed===false
       });
     });
     renderInbox();
-  }catch(e){ console.warn('Live API unavailable', e); }
+    const n = document.getElementById('dPending'); if(n) n.textContent = INBOX.length;
+  }catch(e){ console.warn('inbox', e); }
 }
 const _approve = approveItem, _reject = rejectItem;
 approveItem = async function(){
-  if(API_BASE && curItem){
+  if(LIVE && curItem){
     if(!guardPerm('approve')) return;
-    await fetch(API_BASE+'/v1/oversight/'+curItem.id+'/decide', {method:'POST', headers:apiHeaders(), body: JSON.stringify({decision:'approve'})});
+    try{ await api('/v1/oversight/'+curItem.id+'/decide', {method:'POST', body:{decision:'approve'}}); }
+    catch(e){ showToast('Approve failed — '+e.message); return; }
+    closeDrawer(); dropItem(); showToast('✓ Approved — executing if policy still allows');
+    loadHistory(); return;
   }
   _approve();
 };
 rejectItem = async function(){
-  if(API_BASE && curItem){
+  if(LIVE && curItem){
     if(!guardPerm('approve')) return;
-    await fetch(API_BASE+'/v1/oversight/'+curItem.id+'/decide', {method:'POST', headers:apiHeaders(), body: JSON.stringify({decision:'reject', reason:'rejected from prototype'})});
+    try{ await api('/v1/oversight/'+curItem.id+'/decide', {method:'POST', body:{decision:'reject', reason:'rejected from prototype'}}); }
+    catch(e){ showToast('Reject failed — '+e.message); return; }
+    closeDrawer(); dropItem(); showToast('✕ Rejected — captured as an eval case');
+    loadEvals(); return;
   }
   _reject();
 };
 
+async function fireAlert(id){
+  if(!guardPerm('trigger')) return;
+  if(!LIVE){ showToast('Start the API (`uv run uvicorn …`) then open /prototype/'); return; }
+  try{
+    const run = await api('/v1/runs', {method:'POST', body:{alert_id:id}});
+    showToast(id+' → '+run.status+' ('+run.id+')');
+    await liveInbox();
+    go('oversight');
+  }catch(e){ showToast('Trigger failed — '+e.message); }
+}
+
+async function loadHistory(){
+  if(!LIVE) return;
+  try{
+    const runs = await api('/v1/runs');
+    const body = document.getElementById('recentRunsBody');
+    if(!runs.length){
+      body.innerHTML = '<tr><td colspan="6" style="color:var(--muted);padding:16px">No live runs yet. Fire a demo alert from Overview.</td></tr>';
+      return;
+    }
+    body.innerHTML = runs.map(r=>`<tr class="clickable" onclick="selectRun('${r.id}')">
+      <td class="mono">${r.id}</td><td>Ransomware → Isolate &amp; Restore</td>
+      <td>${r.tenant_id}</td>
+      <td><span class="badge ${r.status==='closed'?'b-green':r.status==='rolled_back'?'b-blue':r.status==='awaiting_human'?'b-amber':'b-grey'}">${r.status}</span></td>
+      <td>${(r.approval&&r.approval.user_id)||r.autonomy_rung}</td>
+      <td>${(r.created_at||'').replace('T',' ').slice(0,16)}</td>
+    </tr>`).join('');
+    if(!selectedRunId || !runs.find(x=>x.id===selectedRunId)) selectedRunId = runs[0].id;
+    await selectRun(selectedRunId);
+  }catch(e){ console.warn('history', e); }
+}
+
+async function selectRun(id){
+  selectedRunId = id;
+  if(!LIVE) return;
+  const run = await api('/v1/runs/'+id);
+  const led = await api('/v1/ledger?run_id='+encodeURIComponent(id));
+  document.getElementById('histRunId').textContent = '#'+run.id;
+  document.getElementById('histBadge').textContent = run.status + (led.intact?' · chain intact':' · chain BROKEN');
+  document.getElementById('histBadge').className = 'badge '+(run.status==='closed'?'b-green':run.status==='rolled_back'?'b-blue':'b-amber');
+  document.getElementById('histMeta').textContent = 'Ransomware → Isolate & Restore · '+run.tenant_id+' · '+run.autonomy_rung+' · alert '+run.alert_id;
+  const cls = ['ok','triage','remediate','gate','human'];
+  document.getElementById('histTimeline').innerHTML = (led.entries||[]).map((e,i)=>{
+    const c = cls[i%cls.length];
+    const hd = e.event_type;
+    const bd = JSON.stringify(e.payload).slice(0,180);
+    return `<div class="tl-item ${c}"><div class="tm">${(e.created_at||'').slice(11,19)} · ${hd}</div>
+      <div class="hd">${hd}</div><div class="bd mono" style="font-size:11px">${bd}</div>
+      <div class="bd" style="font-size:11px;color:var(--muted)">${e.entry_hash.slice(0,16)}…</div></div>`;
+  }).join('') || '<div class="bd">No ledger entries</div>';
+  const ev = run.execution||{};
+  const pol = run.policy_eval||{};
+  document.getElementById('acctBody').innerHTML = `
+    <div class="kv"><span class="k">Run status</span><span class="v">${run.status}</span></div>
+    <div class="kv"><span class="k">Alert</span><span class="v mono">${run.alert_id}</span></div>
+    <div class="kv"><span class="k">Authorised by</span><span class="v">${(run.approval&&run.approval.user_id)||'—'}</span></div>
+    <div class="kv"><span class="k">Guardrails</span><span class="v">${pol.passed===true?'passed':pol.passed===false?'blocked':'—'}</span></div>
+    <div class="kv"><span class="k">Ledger</span><span class="v mono">${led.intact?'sha256 ✓ HMAC': 'BROKEN'}</span></div>
+    <div class="kv"><span class="k">Execution</span><span class="v">${ev.record_id||'not executed'}</span></div>`;
+}
+
+async function rollbackLive(){
+  if(!guardPerm('rollback')) return;
+  if(!LIVE || !selectedRunId){ showToast('Rollback initiated — endpoint reverting to pre-action snapshot (simulated)'); return; }
+  try{
+    await api('/v1/runs/'+selectedRunId+'/rollback', {method:'POST', body:{}});
+    showToast('↺ Rolled back '+selectedRunId);
+    loadHistory();
+  }catch(e){ showToast('Rollback failed — '+e.message); }
+}
+async function exportLive(){
+  if(!guardPerm('export')) return;
+  if(!LIVE){ showToast('Audit record exported as signed PDF (simulated)'); return; }
+  const led = await api('/v1/ledger'+(selectedRunId?('?run_id='+encodeURIComponent(selectedRunId)):''));
+  const blob = new Blob([JSON.stringify(led,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='trust-ladder-ledger.json'; a.click();
+  showToast('⤓ Exported signed ledger JSON');
+}
+
+async function loadEvals(){
+  if(!LIVE) return;
+  try{
+    const e = await api('/v1/evals');
+    const ok = (b, id, idd, yes, no) => {
+      document.getElementById(id).textContent = b?yes:no;
+      document.getElementById(id).className = 'badge '+(b?'b-green':'b-red');
+      document.getElementById(idd).textContent = b?'pass':'fail';
+    };
+    ok(e.critical_infra_never_isolated, 'evalSafety','evalSafetyD','0 false isolations','FAIL');
+    ok(e.prompt_injection_does_not_redirect_to_dc && e.untrusted_text_policy_deny, 'evalInj','evalInjD', 'injection blocked','FAIL');
+    document.getElementById('evalGolden').textContent = e.golden_cases+' cases';
+    document.getElementById('evalGoldenD').textContent = e.passed?'suite pass':'suite fail';
+  }catch(e){ console.warn('evals', e); }
+}
+
+async function refreshLive(){
+  if(!API_BASE) return;
+  try{
+    const health = await api('/v1/health');
+    LIVE = true;
+    const chip = document.getElementById('liveChip');
+    chip.textContent = '● Live API · LLM='+(health.llm||'?')+(health.model?' · '+health.model:'');
+    const cp = await api('/v1/control-plane');
+    paintKill(false, !!cp.global_pause);
+    if(!cp.global_pause && (cp.paused_workflows||[]).length) paintKill(true, true);
+    await liveInbox();
+    const page = document.querySelector('.page.active');
+    if(page && page.id==='history') await loadHistory();
+    if(page && page.id==='reliability') await loadEvals();
+  }catch(e){
+    LIVE = false;
+    document.getElementById('liveChip').textContent = '○ Demo UI only — start the API to go live';
+  }
+}
+
 /* ================= INIT ================= */
 renderGuards();renderInbox();step(1);setRole('admin');
-liveInbox();
   </script>
 </body>
 

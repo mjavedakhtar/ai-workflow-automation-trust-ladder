@@ -179,6 +179,27 @@ def lint_script(body: LintRequest, principal: Principal = Depends(get_principal)
     return lint(body.script)
 
 
+@router.get("/deployment")
+def get_deployment(db: Session = Depends(get_db), principal: Principal = Depends(get_principal)):
+    require(principal, "read")
+    dep = (
+        db.query(AgentDeployment)
+        .filter_by(tenant_id=principal.tenant_id, workflow_id="ransomware-isolate-restore")
+        .one_or_none()
+    )
+    if dep is None:
+        raise HTTPException(404, "Deployment missing")
+    return {
+        "tenant_id": dep.tenant_id,
+        "workflow_id": dep.workflow_id,
+        "autonomy_rung": dep.autonomy_rung,
+        "status": dep.status,
+        "paused": dep.paused,
+        "guardrails": dep.guardrails,
+        "scope": dep.scope,
+    }
+
+
 @router.post("/activation")
 def activate(body: ActivationRequest, db: Session = Depends(get_db), principal: Principal = Depends(get_principal)):
     require(principal, "activate")

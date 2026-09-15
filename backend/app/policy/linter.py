@@ -14,6 +14,9 @@ ALLOWED = {
     "get-filehash",
     "start-mpwdo",
     "update-mpsignature",
+    "isolate-endpoint",
+    "get-backup",
+    "restore-backup",
 }
 
 FORBIDDEN = [

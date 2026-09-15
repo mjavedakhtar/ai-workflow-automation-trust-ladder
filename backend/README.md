@@ -241,14 +241,16 @@ Companion product docs at repo root: [PRD](../PRD_Safe_AI_Automation.md) · [arc
 [`uv`](https://docs.astral.sh/uv/) — from the **repository root**:
 
 ```bash
-cp .env.example .env          # add GOOGLE_API_KEY for live Gemini
+cp .env.example .env
 uv sync --all-groups
 uv run uvicorn backend.app.main:app --reload --port 8000
 ```
 
+Open http://127.0.0.1:8000/prototype/ — fire **A-8841** on Overview, approve in Oversight, read the ledger under Execution & audit.
+
 ```bash
-uv run pytest -q              # 16 tests: linter, policy, RBAC, ledger, graph
-docker compose up --build     # same API on :8000
+uv run pytest -q
+docker compose up --build
 ```
 
 | `GOOGLE_API_KEY` | What runs |

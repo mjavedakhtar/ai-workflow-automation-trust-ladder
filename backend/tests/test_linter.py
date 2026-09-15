@@ -12,5 +12,6 @@ def test_allowlisted_cmdlet():
     assert r["passed"] is True
 
 
-def test_empty_script_ok():
-    assert lint("")["passed"] is True
+def test_certified_isolate_restore_script():
+    r = lint("Isolate-Endpoint -Id $host\nGet-Backup -Host $host\nRestore-Backup -SnapshotId $clean")
+    assert r["passed"] is True
