@@ -1,0 +1,4 @@
+# Local / private files — not part of the public project
+.DS_Store
+.agents/
+private/

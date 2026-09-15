@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trust Ladder · Safe AI Automation for MSP Operations</title>
+  <style>
+    :root {
+      --navy: #0b1e3f;
+      --navy-2: #12294f;
+      --navy-3: #1b3a6b;
+      --blue: #2f6fed;
+      --blue-soft: #e8f0ff;
+      --blue-2: #1e5bd6;
+      --ink: #0f1b2d;
+      --muted: #5b6b83;
+      --line: #e4e9f1;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --green: #12996b;
+      --green-soft: #e6f7f0;
+      --amber: #c9820b;
+      --amber-soft: #fdf3e0;
+      --red: #d23b3b;
+      --red-soft: #fdeaea;
+      --purple: #7b53d6;
+      --purple-soft: #f0eafb;
+      --gold: #b8860b;
+      --radius: 12px;
+      --shadow: 0 1px 2px rgba(15, 27, 45, .06), 0 6px 20px rgba(15, 27, 45, .06);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      font-size: 14px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 224px 1fr;
+      min-height: 100vh
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    /* Sidebar */
+    .side {
+      background: var(--navy);
+      color: #c9d6ec;
+      display: flex;
+      flex-direction: column;
+      padding: 0
+    }
+
+    .brand {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .brand b {
+      color: #fff;
+      font-size: 16px;
+      letter-spacing: .2px;
+      display: block
+    }
+
+    .brand span {
+      font-size: 11px;
+      color: #8ba3cc
+    }
+
+    .nav {
+      padding: 10px 8px;
+      flex: 1
+    }
+
+    .nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: #c9d6ec;
+      text-decoration: none;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 2px
+    }
+
+    .nav a .ic {
+      width: 16px;
+      height: 16px;
+      opacity: .85;
+      flex: 0 0 16px
+    }
+
+    .nav a:hover {
+      background: rgba(255, 255, 255, .06);
+      color: #fff
+    }
+
+    .nav a.active {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .nav .grp {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: #5f77a3;
+      padding: 14px 12px 6px
+    }
+
+    .nav a.locked {
+      opacity: .4;
+      cursor: not-allowed
+    }
+
+    .nav a .lock {
+      margin-left: auto;
+      font-size: 11px
+    }
+
+    .side-foot {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      font-size: 11px;
+      color: #7f97c2
+    }
+
+    /* Topbar */
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-width: 0
+    }
+
+    .top {
+      min-height: 56px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 22px;
+      position: sticky;
+      top: 0;
+      z-index: 20
+    }
+
+    .search {
+      flex: 1;
+      max-width: 420px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .role-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 9px;
+      padding: 5px 8px 5px 12px
+    }
+
+    .role-switch label {
+      font-size: 11px;
+      color: #a9bde0;
+      letter-spacing: .3px
+    }
+
+    .role-switch select {
+      background: var(--navy-3);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 7px;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer
+    }
+
+    .btn-kill {
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid #f0b8b8;
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap
+    }
+
+    .btn-kill:hover {
+      background: #fbdcdc
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2f6fed, #7b53d6);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    /* Kill banner */
+    .killbar {
+      background: linear-gradient(90deg, #7c1d1d, #b02626);
+      color: #fff;
+      padding: 10px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px
+    }
+
+    .killbar b {
+      font-size: 13px
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .5
+      }
+    }
+
+    .killbar .siren {
+      animation: pulse 1s infinite
+    }
+
+    /* Content */
+    .content {
+      padding: 24px 28px;
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto
+    }
+
+    .crumb {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px
+    }
+
+    .crumb b {
+      color: var(--ink)
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0 0 4px
+    }
+
+    h2 {
+      font-size: 16px;
+      margin: 0 0 12px
+    }
+
+    h3 {
+      font-size: 13px;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted)
+    }
+
+    .lead {
+      color: var(--muted);
+      margin: 0 0 20px;
+      max-width: 780px
+    }
+
+    .page {
+      display: none;
+      animation: fade .25s ease
+    }
+
+    .page.active {
+      display: block
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px
+    }
+
+    .g2 {
+      grid-template-columns: 1fr 1fr
+    }
+
+    .g3 {
+      grid-template-columns: repeat(3, 1fr)
+    }
+
+    .g4 {
+      grid-template-columns: repeat(4, 1fr)
+    }
+
+    @media(max-width:900px) {
+
+      .g2,
+      .g3,
+      .g4 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap
+    }
+
+    .b-green {
+      background: var(--green-soft);
+      color: var(--green)
+    }
+
+    .b-amber {
+      background: var(--amber-soft);
+      color: var(--amber)
+    }
+
+    .b-red {
+      background: var(--red-soft);
+      color: var(--red)
+    }
+
+    .b-blue {
+      background: var(--blue-soft);
+      color: var(--blue-2)
+    }
+
+    .b-purple {
+      background: var(--purple-soft);
+      color: var(--purple)
+    }
+
+    .b-grey {
+      background: #eef1f6;
+      color: var(--muted)
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .15s
+    }
+
+    .btn:hover {
+      border-color: #c9d3e3;
+      background: #fbfcfe
+    }
+
+    .btn.primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff
+    }
+
+    .btn.primary:hover {
+      background: var(--blue-2)
+    }
+
+    .btn.danger {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--blue-2)
+    }
+
+    .btn.sm {
+      padding: 5px 10px;
+      font-size: 12px
+    }
+
+    .btn:disabled,
+    .btn.perm-locked {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+
+    .spread {
+      justify-content: space-between
+    }
+
+    .wrap {
+      flex-wrap: wrap
+    }
+
+    .stat {
+      padding: 16px 18px
+    }
+
+    .stat .n {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -.5px
+    }
+
+    .stat .l {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .stat .trend {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 6px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 600
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr.clickable {
+      cursor: pointer
+    }
+
+    tr.clickable:hover {
+      background: #fafbfe
+    }
+
+    .kv {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--line);
+      font-size: 13px
+    }
+
+    .kv:last-child {
+      border-bottom: none
+    }
+
+    .kv .k {
+      color: var(--muted)
+    }
+
+    .kv .v {
+      font-weight: 600
+    }
+
+    .ladder {
+      display: flex;
+      gap: 0;
+      margin: 0 0 22px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden
+    }
+
+    .rung {
+      flex: 1;
+      padding: 14px 16px;
+      border-right: 1px solid var(--line);
+      position: relative
+    }
+
+    .rung:last-child {
+      border-right: none
+    }
+
+    .rung .num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #eef1f6;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px
+    }
+
+    .rung.done .num {
+      background: var(--green);
+      color: #fff
+    }
+
+    .rung.current {
+      background: var(--blue-soft)
+    }
+
+    .rung.current .num {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .rung .t {
+      font-weight: 600;
+      font-size: 13px
+    }
+
+    .rung .d {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .wz-step {
+      display: none
+    }
+
+    .wz-step.active {
+      display: block
+    }
+
+    .field {
+      margin-bottom: 16px
+    }
+
+    .field label {
+      display: block;
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 6px
+    }
+
+    .field .hint {
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    select,
+    input[type=text],
+    input[type=number],
+    textarea {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #fff
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      background: #fff
+    }
+
+    .chip.on {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      color: var(--blue-2);
+      font-weight: 600
+    }
+
+    .guard {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-bottom: 10px
+    }
+
+    .guard .toggle {
+      flex: 0 0 auto;
+      margin-top: 2px
+    }
+
+    .switch {
+      position: relative;
+      width: 38px;
+      height: 22px;
+      background: #cdd6e6;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .switch.on {
+      background: var(--green)
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .2s;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .2)
+    }
+
+    .switch.on::after {
+      left: 18px
+    }
+
+    .switch.perm-locked {
+      opacity: .4;
+      cursor: not-allowed
+    }
+
+    .auto-lvl {
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: .15s;
+      height: 100%
+    }
+
+    .auto-lvl:hover {
+      border-color: #b9c6de
+    }
+
+    .auto-lvl.sel {
+      border-color: var(--blue);
+      background: var(--blue-soft)
+    }
+
+    .auto-lvl .lv {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue-2);
+      letter-spacing: .5px
+    }
+
+    .auto-lvl h4 {
+      margin: 6px 0;
+      font-size: 15px
+    }
+
+    .auto-lvl p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .sim-bar {
+      height: 10px;
+      background: #eef1f6;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 6px 0
+    }
+
+    .sim-fill {
+      height: 100%;
+      background: var(--blue);
+      width: 0;
+      transition: width .8s ease
+    }
+
+    .tl {
+      position: relative;
+      padding-left: 28px
+    }
+
+    .tl::before {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--line)
+    }
+
+    .tl-item {
+      position: relative;
+      padding: 0 0 20px
+    }
+
+    .tl-item::before {
+      content: "";
+      position: absolute;
+      left: -24px;
+      top: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--blue)
+    }
+
+    .tl-item.ok::before {
+      border-color: var(--green)
+    }
+
+    .tl-item.gate::before {
+      border-color: var(--amber)
+    }
+
+    .tl-item.human::before {
+      border-color: var(--purple)
+    }
+
+    .tl-item.triage::before {
+      border-color: var(--blue)
+    }
+
+    .tl-item.remediate::before {
+      border-color: var(--purple)
+    }
+
+    .tl-item .tm {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .tl-item .hd {
+      font-weight: 600;
+      font-size: 13px;
+      margin: 2px 0
+    }
+
+    .tl-item .bd {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .tl-item .detail {
+      background: #f8fafd;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #334
+    }
+
+    .handoff {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      margin-bottom: 4px
+    }
+
+    .handoff.t {
+      background: var(--blue-soft);
+      color: var(--blue-2)
+    }
+
+    .handoff.r {
+      background: var(--purple-soft);
+      color: var(--purple)
+    }
+
+    .drawer-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 27, 45, .35);
+      display: none;
+      z-index: 50
+    }
+
+    .drawer-bg.open {
+      display: block
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 520px;
+      max-width: 94vw;
+      background: #fff;
+      box-shadow: -8px 0 40px rgba(15, 27, 45, .18);
+      transform: translateX(100%);
+      transition: .28s;
+      z-index: 51;
+      display: flex;
+      flex-direction: column
+    }
+
+    .drawer.open {
+      transform: none
+    }
+
+    .drawer .dh {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start
+    }
+
+    .drawer .db {
+      padding: 18px 20px;
+      overflow: auto;
+      flex: 1
+    }
+
+    .drawer .df {
+      padding: 14px 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 10px
+    }
+
+    .x {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      border: none;
+      background: none
+    }
+
+    .conf {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .conf .track {
+      flex: 1;
+      height: 8px;
+      background: #eef1f6;
+      border-radius: 6px;
+      overflow: hidden
+    }
+
+    .conf .f {
+      height: 100%;
+      border-radius: 6px
+    }
+
+    .note {
+      background: var(--blue-soft);
+      border: 1px solid #cfe0ff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #1b3d7a;
+      margin-bottom: 16px
+    }
+
+    .note.warn {
+      background: var(--amber-soft);
+      border-color: #f2dca6;
+      color: #7a5a13
+    }
+
+    .note.danger {
+      background: var(--red-soft);
+      border-color: #f3c4c4;
+      color: #7c2020
+    }
+
+    .note.role {
+      background: #f2eefc;
+      border-color: #ddd0f5;
+      color: #4a2e86
+    }
+
+    .agent-face {
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+
+    .agent-ic {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--purple-soft);
+      color: var(--purple);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      flex: 0 0 34px
+    }
+
+    .agent-ic.triage {
+      background: var(--blue-soft);
+      color: var(--blue-2)
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px
+    }
+
+    .code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px;
+      background: #0d1b33;
+      color: #d7e3ff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      white-space: pre;
+      overflow: auto;
+      line-height: 1.6;
+      border: none;
+      width: 100%;
+      resize: vertical
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      opacity: 0;
+      transition: .3s;
+      z-index: 80;
+      box-shadow: var(--shadow)
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+
+    .hr {
+      height: 1px;
+      background: var(--line);
+      margin: 16px 0
+    }
+
+    .pill-lvl {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--navy-3);
+      color: #fff
+    }
+
+    ul.tight {
+      margin: 6px 0;
+      padding-left: 18px
+    }
+
+    ul.tight li {
+      margin: 3px 0
+    }
+
+    .linter-out {
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      margin-top: 10px
+    }
+
+    .linter-out.pass {
+      background: var(--green-soft);
+      color: var(--green);
+      border: 1px solid #b6e6d2
+    }
+
+    .linter-out.fail {
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid #f3c4c4
+    }
+
+    /* Explainer panel */
+    .explain {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow)
+    }
+
+    .explain .col {
+      padding: 18px 20px
+    }
+
+    .explain .col.left {
+      background: var(--navy);
+      color: #dbe5f7
+    }
+
+    .explain .col.left h3 {
+      color: #8fb4ff
+    }
+
+    .explain .col.right {
+      background: #fff
+    }
+
+    .explain .col.right h3 {
+      color: var(--muted)
+    }
+
+    .explain ol {
+      margin: 6px 0 0;
+      padding-left: 20px
+    }
+
+    .explain ol li {
+      margin: 6px 0;
+      font-size: 13px
+    }
+
+    .explain .why {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none
+    }
+
+    .explain .why li {
+      margin: 9px 0;
+      font-size: 13px;
+      padding-left: 24px;
+      position: relative
+    }
+
+    .explain .why li b {
+      color: var(--ink)
+    }
+
+    .explain .why li::before {
+      content: "⚡";
+      position: absolute;
+      left: 0;
+      top: 0
+    }
+
+    @media(max-width:820px) {
+      .explain {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body class="role-admin">
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="side">
+      <div class="brand"><b>Trust Ladder</b><span>Safe AI Automation</span></div>
+      <nav class="nav" id="nav">
+        <a data-nav="dash"><span class="ic">◐</span> Intelligence</a>
+        <a data-nav="dash"><span class="ic">▤</span> Assets</a>
+        <a data-nav="dash"><span class="ic">🛡</span> Protection</a>
+        <a data-nav="oversight"><span class="ic">🎧</span> Service desk</a>
+        <a data-nav="dash" class="active"><span class="ic">⚡</span> Automation</a>
+        <div class="grp">Safe AI Automation</div>
+        <a data-nav="dash"><span class="ic">▦</span> Overview</a>
+        <a data-nav="activate" data-perm-nav="activate"><span class="ic">✦</span> Activate agent</a>
+        <a data-nav="oversight"><span class="ic">✋</span> Oversight inbox</a>
+        <a data-nav="history"><span class="ic">🕘</span> Execution &amp; audit</a>
+        <a data-nav="reliability"><span class="ic">📈</span> Reliability &amp; evals</a>
+      </nav>
+      <div class="side-foot">Trust Ladder · concept prototype<br>Munshi Javed Akhtar</div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <!-- Kill banner -->
+      <div class="killbar" id="killbar" hidden>
+        <span class="siren">🚨</span>
+        <div><b id="killTitle">EMERGENCY PAUSE ENGAGED — all agents halted across all tenants</b>
+          <div style="font-size:12px;opacity:.9" id="killSub">No agent can act. In-flight approvals are frozen. Platform
+            is in read-only shadow mode until resumed.</div>
+        </div>
+        <button class="btn" onclick="resumeAgents()" style="margin-left:auto">Resume agents</button>
+      </div>
+
+      <div class="top">
+        <div class="search">🔎 Find, ask or do anything with AI-powered search</div>
+        <div class="role-switch">
+          <label>Viewing as</label>
+          <select id="roleSel" onchange="setRole(this.value)">
+            <option value="owner">MSP Owner</option>
+            <option value="admin" selected>Automation Admin</option>
+            <option value="tech">L2 Technician</option>
+            <option value="auditor">Compliance / Auditor</option>
+          </select>
+        </div>
+        <button class="btn-kill" id="killBtn" onclick="engageKill()">🚨 <span id="killBtnTxt">Pause all
+            agents</span></button>
+        <div class="avatar" id="avatar">AA</div>
+      </div>
+
+      <div class="content">
+
+        <!-- role explainer -->
+        <div class="note role" id="roleNote" style="max-width:none"></div>
+
+        <!-- ============ DASHBOARD ============ -->
+        <section class="page active" id="dash">
+          <div class="crumb">Automation / <b>Safe AI Automation</b></div>
+          <h1>Introduce agents to production — without losing sleep</h1>
+          <p class="lead">The workflow <em>builder</em> defines <b>what</b> an agent does. This layer governs <b>whether
+              it is trusted to act</b>: safe activation, live oversight, a defensible audit trail, continuous evals —
+            and <b>who is allowed to do what</b>. It is the difference between a demo and something you'd run against a
+            client's production estate.</p>
+
+          <div class="grid g4" style="margin-bottom:16px">
+            <div class="card stat">
+              <div class="n">6</div>
+              <div class="l">Agents deployed</div>
+              <div class="trend" style="color:var(--green)">▲ 2 this month</div>
+            </div>
+            <div class="card stat">
+              <div class="n" id="dPending">3</div>
+              <div class="l">Awaiting approval</div>
+              <div class="trend" style="color:var(--amber)">2 aging &gt; 15 min</div>
+            </div>
+            <div class="card stat">
+              <div class="n">96.4%</div>
+              <div class="l">Human-agreement rate</div>
+              <div class="trend" style="color:var(--green)">▲ 1.8 pts vs last wk</div>
+            </div>
+            <!-- ROLE-GATED metric: € for owner/admin, hours for tech/auditor -->
+            <div class="card stat" data-show="owner admin">
+              <div class="n" style="color:var(--gold)">€7.1k</div>
+              <div class="l">Technician time saved / mo (value)</div>
+              <div class="trend" style="color:var(--green)">148 h · ≈ €7.1k</div>
+            </div>
+            <div class="card stat" data-show="tech auditor">
+              <div class="n">148 h</div>
+              <div class="l">Technician time saved / mo</div>
+              <div class="trend" style="color:var(--muted)">Cost view hidden for this role</div>
+            </div>
+          </div>
+
+          <h2>Your agents, by rung on the Trust Ladder</h2>
+          <div class="card" style="padding:0;margin-bottom:22px">
+            <table>
+              <thead>
+                <tr>
+                  <th>Agent workflow</th>
+                  <th>Client scope</th>
+                  <th>Autonomy rung</th>
+                  <th>Human-agreement</th>
+                  <th data-show="owner admin">ROI / mo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="clickable" onclick="go('oversight')">
+                  <td><b>Ransomware → Isolate &amp; Restore</b>
+                    <div style="color:var(--muted);font-size:12px">Triage + Remediation agents · destructive,
+                      high-stakes</div>
+                  </td>
+                  <td>Northwind Ltd</td>
+                  <td><span class="pill-lvl">L2 · Approve-to-act</span></td>
+                  <td><span class="badge b-amber">91%</span></td>
+                  <td data-show="owner admin" style="color:var(--gold);font-weight:600">€1.9k</td>
+                  <td><span class="badge b-amber"><span class="dot" style="background:var(--amber)"></span> 3
+                      pending</span></td>
+                </tr>
+                <tr class="clickable" onclick="go('history')">
+                  <td><b>Patch failure auto-remediation</b>
+                    <div style="color:var(--muted);font-size:12px">Endpoint mgmt</div>
+                  </td>
+                  <td>All tenants</td>
+                  <td><span class="pill-lvl" style="background:var(--green)">L3 · Auto + notify</span></td>
+                  <td><span class="badge b-green">98%</span></td>
+                  <td data-show="owner admin" style="color:var(--gold);font-weight:600">€3.1k</td>
+                  <td><span class="badge b-green"><span class="dot" style="background:var(--green)"></span>
+                      Healthy</span></td>
+                </tr>
+                <tr class="clickable" onclick="go('reliability')">
+                  <td><b>Phishing report triage</b>
+                    <div style="color:var(--muted);font-size:12px">Service desk</div>
+                  </td>
+                  <td>Acme, Globex</td>
+                  <td><span class="pill-lvl" style="background:var(--amber)">L1 · Suggest only</span></td>
+                  <td><span class="badge b-green">97%</span></td>
+                  <td data-show="owner admin" style="color:var(--gold);font-weight:600">€2.1k</td>
+                  <td><span class="badge b-blue"><span class="dot" style="background:var(--blue)"></span> Ready to
+                      promote</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row spread wrap" style="gap:16px">
+            <div>
+              <h2 style="margin-bottom:4px">Ready to add another?</h2>
+              <p style="color:var(--muted);margin:0">Walk the safe-activation flow — scope, guardrails, dry-run, then a
+                canary rollout.</p>
+            </div>
+            <button class="btn primary" data-perm="activate" onclick="go('activate')">✦ Activate a new agent
+              safely</button>
+          </div>
+        </section>
+
+        <!-- ============ ACTIVATION WIZARD ============ -->
+        <section class="page" id="activate">
+          <div class="crumb">Automation / Safe AI Automation / <b>Activate agent</b></div>
+          <h1>Safe activation — "Ransomware → Isolate &amp; Restore"</h1>
+          <p class="lead">A destructive action (isolating an endpoint, restoring a backup) can never go from "off" to
+            "autonomous" in one click. This flow forces scope, guardrails, and evidence-of-safety <em>before</em> the
+            agent can touch production.</p>
+
+          <!-- WHAT THE AGENT DOES / WHY IT HELPS -->
+          <div class="explain">
+            <div class="col left">
+              <h3>What the agent does</h3>
+              <p style="margin:6px 0 0;font-size:13px;color:#c3d3ef">At 3am, EDR flags ransomware on an endpoint. Two
+                agents work in sequence:</p>
+              <ol>
+                <li><b style="color:#fff">Triage Agent</b> — confirms it's real (encryption rate, ransomware note, known
+                  family), assesses which endpoint and how critical, and locates the most recent <b
+                    style="color:#fff">clean, verified backup</b> from before the infection.</li>
+                <li><b style="color:#fff">Remediation Agent</b> — proposes to <b style="color:#fff">isolate</b> the
+                  endpoint (stop the spread) and <b style="color:#fff">restore</b> from that clean backup, checks
+                  guardrails, then waits for one-click human approval.</li>
+              </ol>
+            </div>
+            <div class="col right">
+              <h3>Why it beats a human at 3am</h3>
+              <ul class="why">
+                <li><b>Speed is the whole game.</b> Ransomware spreads in minutes; a human on-call needs 15–40 to wake,
+                  connect, investigate, and find a clean backup. The agent compresses that prep to seconds — the human
+                  starts at "approve?", not "what's happening?"</li>
+                <li><b>Always on.</b> One tech can't watch 50 clients' endpoints overnight — exactly when attacks fire.
+                  Agents triage all of them at once.</li>
+                <li><b>Removes error-prone glue work, not judgment.</b> Hunting a backup that isn't itself encrypted is
+                  where a tired human slips. The agent verifies consistently; the human keeps the irreversible call.
+                </li>
+                <li><b>Scales MSP economics.</b> 24/7 response without night staff — the ROI story (shown to the Owner,
+                  not pressured onto the tech).</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ladder" id="wzLadder">
+            <div class="rung current">
+              <div class="num">1</div>
+              <div class="t">Scope</div>
+              <div class="d">Where &amp; when it runs</div>
+            </div>
+            <div class="rung">
+              <div class="num">2</div>
+              <div class="t">Guardrails</div>
+              <div class="d">Hard limits + script safety</div>
+            </div>
+            <div class="rung">
+              <div class="num">3</div>
+              <div class="t">Dry-run</div>
+              <div class="d">Replay on real history</div>
+            </div>
+            <div class="rung">
+              <div class="num">4</div>
+              <div class="t">Autonomy</div>
+              <div class="d">How much rope</div>
+            </div>
+            <div class="rung">
+              <div class="num">5</div>
+              <div class="t">Canary</div>
+              <div class="d">Go live, small</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <!-- STEP 1 -->
+            <div class="wz-step active" data-step="1">
+              <h2>1 · Scope the agent</h2>
+              <div class="grid g2">
+                <div class="field">
+                  <label>Client / tenant scope <span class="hint">— start narrow, expand later</span></label>
+                  <select id="f-scope">
+                    <option>Northwind Ltd (1 tenant · 240 endpoints)</option>
+                    <option>Pilot group (3 tenants · 600 endpoints)</option>
+                    <option>All managed tenants (18 · 4,100 endpoints)</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Trigger <span class="hint">— from the workflow builder</span></label>
+                  <select>
+                    <option>EDR: Ransomware behaviour detected (high confidence)</option>
+                    <option>EDR: Suspicious encryption activity</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Active window <span class="hint">— when may it act unattended?</span></label>
+                <div class="chip-row">
+                  <span class="chip on" onclick="tog(this)">24/7</span>
+                  <span class="chip" onclick="tog(this)">Business hours only</span>
+                  <span class="chip" onclick="tog(this)">After-hours (when no tech is on)</span>
+                </div>
+              </div>
+              <div class="note">🔒 Scope is a <b>containment boundary</b>. If the agent misbehaves, blast radius is
+                capped at what you selected here — never the whole estate.</div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="wz-step" data-step="2">
+              <h2>2 · Guardrails — the lines it cannot cross</h2>
+              <p style="color:var(--muted);margin-top:-4px">These are enforced by the platform, <b>not</b> the model.
+                Even a mis-reasoning agent is physically prevented from crossing them.</p>
+              <div id="guards"></div>
+
+              <div class="hr"></div>
+              <h3 style="margin-bottom:4px">Script safety — try to break it 👇</h3>
+              <p style="color:var(--muted);font-size:13px;margin-top:0">Any command the Remediation Agent runs is
+                checked against a certified allow-list by the platform. Edit the script and re-check — add something
+                destructive like <span class="mono">Remove-Item</span> or <span class="mono">Format-Volume</span> and
+                watch it get blocked.</p>
+              <textarea class="code" id="scriptBox" rows="5"># Isolate-And-Restore.ps1  (agent-proposed)
+Isolate-Endpoint -Id $host -Confirm:$false
+Get-Backup -Host $host -Verified -Before $infectionTime
+Restore-Backup -SnapshotId $clean</textarea>
+              <div class="row" style="margin-top:10px">
+                <button class="btn primary sm" onclick="lintScript()">▶ Re-check script</button>
+                <button class="btn sm" onclick="injectBad()">💥 Inject a forbidden command</button>
+              </div>
+              <div class="linter-out pass" id="linterOut">🛡 Allow-list check: <b>PASSED</b> — all cmdlets are certified
+                &amp; reversible. Safe for approval.</div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="wz-step" data-step="3">
+              <h2>3 · Dry-run against your real history</h2>
+              <p style="color:var(--muted);margin-top:-4px">Before touching a single live endpoint, replay the agent
+                over the last <b>90 days of real ransomware incidents</b> for this tenant. This is the single most
+                trust-building moment in the flow — proof, not promises.</p>
+              <div class="row spread" style="margin:10px 0 6px">
+                <div><b>62</b> historical incidents found for Northwind Ltd</div>
+                <button class="btn primary sm" id="simBtn" onclick="runSim()">▶ Run dry-run simulation</button>
+              </div>
+              <div class="sim-bar">
+                <div class="sim-fill" id="simFill"></div>
+              </div>
+              <div id="simResult" style="display:none">
+                <div class="grid g4" style="margin:14px 0">
+                  <div class="card stat" style="box-shadow:none">
+                    <div class="n" style="color:var(--green)">58</div>
+                    <div class="l">Matched the technician's action</div>
+                  </div>
+                  <div class="card stat" style="box-shadow:none">
+                    <div class="n" style="color:var(--amber)">3</div>
+                    <div class="l">Would have escalated (unsure)</div>
+                  </div>
+                  <div class="card stat" style="box-shadow:none">
+                    <div class="n" style="color:var(--red)">1</div>
+                    <div class="l">Would have diverged ⚠</div>
+                  </div>
+                  <div class="card stat" style="box-shadow:none">
+                    <div class="n">93.5%</div>
+                    <div class="l">Agreement with humans</div>
+                  </div>
+                </div>
+                <div class="note danger">⚠ <b>1 divergence worth your attention.</b> On incident <span
+                    class="mono">#INC-2291</span>, the agent would have isolated a <b>domain controller</b> — the human
+                  technician chose a softer containment to preserve authentication. <b>Recommended:</b> add a guardrail
+                  excluding servers tagged <span class="mono">role:critical-infra</span>. <button class="btn sm"
+                    onclick="step(2);showToast('Jump back to Guardrails to add the exclusion')">Add guardrail</button>
+                </div>
+                <div class="card" style="padding:0">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Incident</th>
+                        <th>Agent decision</th>
+                        <th>Human did</th>
+                        <th>Verdict</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="mono">#INC-2291</td>
+                        <td>Isolate DC01 + restore</td>
+                        <td>Soft-contain only</td>
+                        <td><span class="badge b-red">Diverged</span></td>
+                      </tr>
+                      <tr>
+                        <td class="mono">#INC-2288</td>
+                        <td>Isolate + restore from 04:00 backup</td>
+                        <td>Isolate + restore from 04:00 backup</td>
+                        <td><span class="badge b-green">Match</span></td>
+                      </tr>
+                      <tr>
+                        <td class="mono">#INC-2280</td>
+                        <td>Escalate — backup integrity unclear</td>
+                        <td>Manual restore after check</td>
+                        <td><span class="badge b-amber">Safe escalation</span></td>
+                      </tr>
+                      <tr>
+                        <td class="mono">#INC-2274</td>
+                        <td>Isolate + restore</td>
+                        <td>Isolate + restore</td>
+                        <td><span class="badge b-green">Match</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="wz-step" data-step="4">
+              <h2>4 · Choose the autonomy rung</h2>
+              <p style="color:var(--muted);margin-top:-4px">You can move up the ladder any time as agreement holds.
+                Given a <b>93.5%</b> dry-run and a destructive action, <b>L2</b> is recommended to start. Promotion is
+                an <b>Owner/Admin</b> decision — a technician can't self-promote an agent.</p>
+              <div class="grid g4" style="margin-top:8px" id="autoLevels">
+                <div class="auto-lvl" data-lvl="L0" onclick="selLvl(this)">
+                  <div class="lv">RUNG 0</div>
+                  <h4>Shadow</h4>
+                  <p>Agent decides silently. Nothing acts. You compare against reality.</p>
+                </div>
+                <div class="auto-lvl" data-lvl="L1" onclick="selLvl(this)">
+                  <div class="lv">RUNG 1</div>
+                  <h4>Suggest</h4>
+                  <p>Agent drafts the action in the tech's queue. Human does everything.</p>
+                </div>
+                <div class="auto-lvl sel" data-lvl="L2" onclick="selLvl(this)">
+                  <div class="lv">RUNG 2 · RECOMMENDED</div>
+                  <h4>Approve-to-act</h4>
+                  <p>Agent prepares &amp; waits for one-click human approval before acting.</p>
+                </div>
+                <div class="auto-lvl" data-lvl="L3" onclick="selLvl(this)">
+                  <div class="lv">RUNG 3</div>
+                  <h4>Auto + notify</h4>
+                  <p>Agent acts within guardrails, notifies you, fully reversible.</p>
+                </div>
+              </div>
+              <div class="note" style="margin-top:16px">⏱ <b>Time-boxed approvals.</b> At L2, if no human responds
+                within <b>15 min</b> during an active ransomware event, the agent escalates to the on-call tech and PSA
+                — it never silently drops a live threat.</div>
+            </div>
+
+            <!-- STEP 5 -->
+            <div class="wz-step" data-step="5">
+              <h2>5 · Canary rollout &amp; go live</h2>
+              <div class="grid g2">
+                <div>
+                  <div class="kv"><span class="k">Workflow</span><span class="v">Ransomware → Isolate &amp;
+                      Restore</span></div>
+                  <div class="kv"><span class="k">Scope</span><span class="v">Northwind Ltd · 240 endpoints</span></div>
+                  <div class="kv"><span class="k">Guardrails active</span><span class="v" id="sumGuards">4 of 5</span>
+                  </div>
+                  <div class="kv"><span class="k">Dry-run agreement</span><span class="v"
+                      style="color:var(--green)">93.5%</span></div>
+                  <div class="kv"><span class="k">Autonomy</span><span class="v" id="sumLvl">L2 · Approve-to-act</span>
+                  </div>
+                  <div class="kv"><span class="k">Rollback</span><span class="v" style="color:var(--green)">Enabled (all
+                      actions reversible)</span></div>
+                </div>
+                <div>
+                  <div class="field">
+                    <label>Canary period <span class="hint">— extra human review before full trust</span></label>
+                    <select>
+                      <option>First 10 incidents OR 14 days</option>
+                      <option>First 25 incidents OR 30 days</option>
+                    </select>
+                  </div>
+                  <div class="note" style="margin:0">During canary, <b>every</b> action is logged with full reasoning
+                    and a mandatory post-action human thumbs-up/down that feeds the eval score. Auto-pause triggers if
+                    agreement drops below <b>90%</b>.</div>
+                </div>
+              </div>
+              <div class="hr"></div>
+              <div class="row spread">
+                <span class="badge b-green">✓ All safety pre-conditions met</span>
+                <button class="btn primary" data-perm="activate" onclick="activateAgent()">🚀 Activate in canary
+                  mode</button>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+            <div class="row spread">
+              <button class="btn" id="wzBack" onclick="step(cur-1)" disabled>← Back</button>
+              <div class="row"><span style="color:var(--muted);font-size:12px" id="wzCount">Step 1 of 5</span>
+                <button class="btn primary" id="wzNext" onclick="step(cur+1)">Next →</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ OVERSIGHT INBOX ============ -->
+        <section class="page" id="oversight">
+          <div class="crumb">Automation / Safe AI Automation / <b>Oversight inbox</b></div>
+          <h1>Oversight inbox</h1>
+          <p class="lead">Where a human stays in the loop <em>without</em> becoming the bottleneck. Each item shows the
+            agent's reasoning, evidence, confidence, and guardrail checks — everything you need to approve in seconds or
+            reject with a reason the agent learns from.</p>
+
+          <div class="row wrap" style="margin-bottom:14px;gap:8px">
+            <span class="badge b-amber"><span class="dot" style="background:var(--amber)"></span> <span
+                id="inboxCount">3</span> awaiting approval</span>
+            <span class="badge b-grey">Filter: All agents ▾</span>
+            <span class="badge b-grey">Sort: Most urgent ▾</span>
+          </div>
+
+          <div class="card" style="padding:0">
+            <table>
+              <thead>
+                <tr>
+                  <th>Agent / action</th>
+                  <th>Client</th>
+                  <th>Confidence</th>
+                  <th>Guardrails</th>
+                  <th>Waiting</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="inboxRows"></tbody>
+            </table>
+          </div>
+          <div class="note" style="margin-top:16px">🧠 <b>Why this beats a generic "approve" button:</b> reviewers
+            approve fast when they can <em>see the agent's work</em>. Reasoning + evidence + guardrail checks turn a
+            blind rubber-stamp into an informed decision — and rejections become labelled training signal.</div>
+        </section>
+
+        <!-- ============ EXECUTION & AUDIT ============ -->
+        <section class="page" id="history">
+          <div class="crumb">Automation / Safe AI Automation / <b>Execution &amp; audit</b></div>
+          <h1>Execution history &amp; audit trail</h1>
+          <p class="lead">Accountability = being able to answer "what did the agent do, why, on whose authority, and can
+            we undo it?" — for an auditor, a client, or an incident review. Every run is a tamper-evident, exportable
+            record. Note the <b>Triage → Remediation handoff</b> — this is the multi-agent orchestration made auditable.
+          </p>
+
+          <div class="grid g2">
+            <div class="card">
+              <div class="row spread">
+                <h2 style="margin:0">Run <span class="mono">#EXR-4471</span></h2><span class="badge b-green">✓ Completed
+                  · reversible</span>
+              </div>
+              <div style="color:var(--muted);font-size:12px;margin:6px 0 16px">Ransomware → Isolate &amp; Restore ·
+                Northwind Ltd · 2026-07-16 03:12 UTC</div>
+              <div class="tl">
+                <div class="tl-item ok">
+                  <div class="tm">03:12:04 · Trigger</div>
+                  <div class="hd">EDR flagged ransomware behaviour on WKS-Finance-07</div>
+                  <div class="bd">Signal confidence 0.97 · 1,240 files being encrypted</div>
+                </div>
+                <div class="tl-item triage"><span class="handoff t">🔷 TRIAGE AGENT</span>
+                  <div class="hd">Confirmed threat &amp; found a clean recovery point</div>
+                  <div class="detail">Confirmed active encryption (entropy spike + known ransomware note). Endpoint is a
+                    workstation, not critical-infra ✓. Located clean backup from 02:00 (integrity-verified, predates
+                    infection). → Classification: TRUE POSITIVE · hand off to Remediation.</div>
+                </div>
+                <div class="tl-item remediate"><span class="handoff r">🟣 REMEDIATION AGENT</span>
+                  <div class="hd">Proposed action: isolate + restore</div>
+                  <div class="detail">Received triage packet. Prepared: (1) isolate WKS-Finance-07 from network, (2)
+                    restore from 02:00 snapshot. Both reversible. → Await human approval (L2).</div>
+                </div>
+                <div class="tl-item gate">
+                  <div class="tm">03:12:07 · Guardrail check</div>
+                  <div class="hd">4 guardrails evaluated — all passed</div>
+                  <div class="bd">Not a domain controller ✓ · Backup &lt; 24h old ✓ · Reversible ✓ · Within scope ✓
+                  </div>
+                </div>
+                <div class="tl-item human">
+                  <div class="tm">03:12:41 · Human</div>
+                  <div class="hd">Approved by M. Reyes (tech, on-call)</div>
+                  <div class="bd">One-click approval · 34s after alert · via mobile</div>
+                </div>
+                <div class="tl-item ok">
+                  <div class="tm">03:12:43 · Action</div>
+                  <div class="hd">Endpoint isolated from network</div>
+                </div>
+                <div class="tl-item ok">
+                  <div class="tm">03:14:20 · Action</div>
+                  <div class="hd">Restored from clean backup (02:00 snapshot)</div>
+                  <div class="bd">1,240 files recovered · endpoint re-scanned clean</div>
+                </div>
+                <div class="tl-item ok">
+                  <div class="tm">03:15:02 · Close</div>
+                  <div class="hd">Ticket auto-resolved &amp; client notified</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px">
+                <h3>Accountability record</h3>
+                <div class="kv"><span class="k">Triage decision by</span><span class="v">Triage Agent v1.4</span></div>
+                <div class="kv"><span class="k">Action proposed by</span><span class="v">Remediation Agent v2.1</span>
+                </div>
+                <div class="kv"><span class="k">Model + prompt version</span><span class="v mono">opus-4.8 ·
+                    rp-2026.07</span></div>
+                <div class="kv"><span class="k">Authorised by</span><span class="v">M. Reyes (human)</span></div>
+                <div class="kv"><span class="k">Guardrails enforced</span><span class="v">4 / 4 passed</span></div>
+                <div class="kv"><span class="k">Data accessed</span><span class="v">EDR log, backup catalog</span></div>
+                <div class="kv"><span class="k">Reversible</span><span class="v" style="color:var(--green)">Yes</span>
+                </div>
+                <div class="kv"><span class="k">Integrity</span><span class="v mono">sha256 ✓ signed</span></div>
+              </div>
+              <div class="card">
+                <h3>Undo / rollback</h3>
+                <p style="color:var(--muted);font-size:13px;margin-top:0">Every agent action is captured as a reversible
+                  transaction. If the restore caused an issue, roll the endpoint back to its pre-action state in one
+                  step.</p>
+                <button class="btn danger" data-perm="rollback"
+                  onclick="showToast('Rollback initiated — endpoint reverting to pre-action snapshot (simulated)')">↺
+                  Roll back this run</button>
+                <button class="btn" data-perm="export"
+                  onclick="showToast('Audit record exported as signed PDF (simulated)')">⤓ Export for auditor</button>
+              </div>
+            </div>
+          </div>
+
+          <h2 style="margin:24px 0 12px">Recent runs — all agents</h2>
+          <div class="card" style="padding:0">
+            <table>
+              <thead>
+                <tr>
+                  <th>Run</th>
+                  <th>Workflow</th>
+                  <th>Client</th>
+                  <th>Outcome</th>
+                  <th>Authorised by</th>
+                  <th>When</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">#EXR-4471</td>
+                  <td>Ransomware → Isolate &amp; Restore</td>
+                  <td>Northwind</td>
+                  <td><span class="badge b-green">Success</span></td>
+                  <td>Human (L2)</td>
+                  <td>2m ago</td>
+                </tr>
+                <tr>
+                  <td class="mono">#EXR-4470</td>
+                  <td>Patch failure remediation</td>
+                  <td>Acme</td>
+                  <td><span class="badge b-green">Success</span></td>
+                  <td>Auto (L3)</td>
+                  <td>18m ago</td>
+                </tr>
+                <tr>
+                  <td class="mono">#EXR-4468</td>
+                  <td>Ransomware → Isolate &amp; Restore</td>
+                  <td>Globex</td>
+                  <td><span class="badge b-amber">Escalated</span></td>
+                  <td>Agent → human</td>
+                  <td>1h ago</td>
+                </tr>
+                <tr>
+                  <td class="mono">#EXR-4465</td>
+                  <td>Ransomware → Isolate &amp; Restore</td>
+                  <td>Northwind</td>
+                  <td><span class="badge b-blue">Rolled back</span></td>
+                  <td>Human</td>
+                  <td>3h ago</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ RELIABILITY & EVALS ============ -->
+        <section class="page" id="reliability">
+          <div class="crumb">Automation / Safe AI Automation / <b>Reliability &amp; evals</b></div>
+          <h1>Reliability &amp; evals</h1>
+          <p class="lead">Trust is not a one-time gate at activation — it must be <em>continuously measured</em>. This
+            is the evidence you use to promote an agent up the ladder, or to catch it drifting before a client does.</p>
+
+          <div class="grid g4" style="margin-bottom:16px">
+            <div class="card stat">
+              <div class="n" style="color:var(--green)">96.4%</div>
+              <div class="l">Human-agreement (30d)</div>
+              <div class="trend" style="color:var(--green)">▲ trending up</div>
+            </div>
+            <div class="card stat">
+              <div class="n">0.94</div>
+              <div class="l">Mean action confidence</div>
+              <div class="l" style="margin-top:2px">well-calibrated</div>
+            </div>
+            <div class="card stat">
+              <div class="n" style="color:var(--amber)">2</div>
+              <div class="l">Open drift alerts</div>
+            </div>
+            <div class="card stat">
+              <div class="n">100%</div>
+              <div class="l">Actions within guardrails</div>
+              <div class="trend" style="color:var(--green)">0 breaches</div>
+            </div>
+          </div>
+
+          <div class="grid g2">
+            <div class="card">
+              <h2>Agreement over time</h2>
+              <p style="color:var(--muted);margin-top:-6px;font-size:13px">% of agent decisions a human confirmed. The
+                promote-to-next-rung threshold is 95%.</p>
+              <svg viewBox="0 0 400 160" width="100%" height="160">
+                <line x1="0" y1="40" x2="400" y2="40" stroke="#eef1f6" />
+                <line x1="0" y1="80" x2="400" y2="80" stroke="#eef1f6" />
+                <line x1="0" y1="120" x2="400" y2="120" stroke="#eef1f6" />
+                <line x1="0" y1="30" x2="400" y2="30" stroke="#12996b" stroke-dasharray="4 4" stroke-width="1.5" />
+                <text x="4" y="26" font-size="9" fill="#12996b">95% promote threshold</text>
+                <polyline fill="none" stroke="#2f6fed" stroke-width="2.5"
+                  points="0,110 57,95 114,100 171,72 228,60 285,52 342,44 400,38" />
+                <polygon fill="rgba(47,111,237,.08)"
+                  points="0,110 57,95 114,100 171,72 228,60 285,52 342,44 400,38 400,160 0,160" />
+              </svg>
+            </div>
+            <div class="card">
+              <h2>Drift &amp; anomaly alerts</h2>
+              <div class="guard" style="border-color:#f2dca6;background:var(--amber-soft)">
+                <div>⚠</div>
+                <div><b>Confidence drop on "backup integrity" step</b>
+                  <div style="font-size:12px;color:#7a5a13">Mean confidence fell 0.91 → 0.78 over 7 days for Globex.
+                    Possible cause: backup schedule change. <b>Agent auto-escalated 3 incidents</b> instead of acting —
+                    working as designed.</div><button class="btn sm" style="margin-top:8px"
+                    onclick="showToast('Opened investigation — linked 3 escalated runs')">Investigate</button>
+                </div>
+              </div>
+              <div class="guard" style="border-color:#cfe0ff;background:var(--blue-soft)">
+                <div>↑</div>
+                <div><b>Phishing-triage agent ready to promote</b>
+                  <div style="font-size:12px;color:#1b3d7a">30-day agreement 97% at L1 with 0 guardrail breaches.
+                    Recommend promoting L1 → L2.</div>
+                  <button class="btn primary sm" style="margin-top:8px" data-perm="promote"
+                    onclick="showToast('Promotion staged — will re-enter canary at L2')">Promote to L2</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h2>Eval suite — runs on every prompt/model change before it reaches production</h2>
+            <div class="grid g3">
+              <div>
+                <div class="kv"><span class="k">Golden-set accuracy</span><span class="badge b-green">98.2%</span></div>
+                <div class="kv"><span class="k">(62 labelled incidents)</span><span class="v mono">pass</span></div>
+              </div>
+              <div>
+                <div class="kv"><span class="k">Destructive-action safety</span><span class="badge b-green">0 false
+                    isolations</span></div>
+                <div class="kv"><span class="k">Critical-infra exclusion</span><span class="v mono">pass</span></div>
+              </div>
+              <div>
+                <div class="kv"><span class="k">Prompt-injection resistance</span><span class="badge b-green">24/24
+                    blocked</span></div>
+                <div class="kv"><span class="k">Adversarial ticket text</span><span class="v mono">pass</span></div>
+              </div>
+            </div>
+            <div class="note" style="margin:14px 0 0">🔁 <b>The loop closes here:</b> rejections from the Oversight
+              inbox and divergences from dry-runs become new labelled cases in this golden set — so every human
+              correction makes the next version measurably safer.</div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAWER for approval detail -->
+  <div class="drawer-bg" id="drawerBg" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="dh">
+      <div class="agent-face">
+        <div class="agent-ic" id="dIcon">🤖</div>
+        <div><b id="dTitle">Remediation Agent</b>
+          <div style="color:var(--muted);font-size:12px" id="dSub"></div>
+        </div>
+      </div>
+      <button class="x" onclick="closeDrawer()">×</button>
+    </div>
+    <div class="db" id="dBody"></div>
+    <div class="df" id="dFoot">
+      <button class="btn danger" style="flex:1" data-perm="approve" onclick="rejectItem()">✕ Reject &amp; teach</button>
+      <button class="btn" data-perm="approve" onclick="showToast('Escalated to senior technician')">Escalate</button>
+      <button class="btn primary" style="flex:1" data-perm="approve" onclick="approveItem()">✓ Approve action</button>
+    </div>
+    <div class="df" id="dFootReadonly" hidden>
+      <div class="note role" style="margin:0;width:100%">👁 Read-only for this role. Approving/rejecting agent actions
+        is done by <b>Technicians</b> and <b>Admins</b>.</div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+/* ================= ROLE / RBAC ================= */
+const ROLES = {
+  owner:  {name:'MSP Owner', av:'JO', kill:'global', activate:false, guardEdit:false, approve:false, promote:true,  rollback:true, export:true,
+    note:"👑 <b>MSP Owner view.</b> You see the commercial picture (ROI in €) and can pause everything in an emergency, but you don't hand-edit guardrails or approve individual tickets — that's your team's job. Oversight is read-only for you."},
+  admin:  {name:'Automation Admin', av:'AA', kill:'global', activate:true, guardEdit:true, approve:true, promote:true, rollback:true, export:true,
+    note:"🛠 <b>Automation Admin view.</b> You configure agents end-to-end: build guardrails, run dry-runs, promote autonomy rungs, approve actions, and hold the global kill switch. The most powerful role."},
+  tech:   {name:'L2 Technician', av:'TK', kill:'scoped', activate:false, guardEdit:false, approve:true, promote:false, rollback:false, export:false,
+    note:"🎧 <b>L2 Technician view.</b> You live in the oversight inbox — approve or reject agent actions. You see <b>accuracy</b>, not € (so you're never pressured to rubber-stamp for savings). You can pause a single agent, but not the whole fleet, and you can't change guardrails or promote agents."},
+  auditor:{name:'Compliance / Auditor', av:'CA', kill:'none', activate:false, guardEdit:false, approve:false, promote:false, rollback:false, export:true,
+    note:"🔍 <b>Compliance / Auditor view.</b> Everything is read-only. You can read and export the tamper-evident audit trail — but you cannot activate, approve, promote, or pause anything. Separation of duties by design."},
+};
+let ROLE='admin';
+function setRole(r){
+  ROLE=r; document.body.className='role-'+r;
+  const R=ROLES[r];
+  document.getElementById('avatar').textContent=R.av;
+  document.getElementById('roleNote').innerHTML=R.note;
+  document.querySelectorAll('[data-show]').forEach(el=>{ el.hidden = !el.dataset.show.split(' ').includes(r); });
+  document.querySelectorAll('[data-perm]').forEach(el=>{
+    const ok = R[el.dataset.perm];
+    el.classList.toggle('perm-locked', !ok);
+    el.title = ok ? '' : 'Requires a role with '+el.dataset.perm+' permission';
+  });
+  document.querySelectorAll('[data-perm-nav]').forEach(el=>{
+    const ok=R[el.dataset.permNav]!==false && R[el.dataset.permNav]!=='none';
+    el.classList.toggle('locked', !ok);
+    el.querySelector('.lock')?.remove();
+    if(!ok){const s=document.createElement('span');s.className='lock';s.textContent='🔒';el.appendChild(s);}
+  });
+  const kb=document.getElementById('killBtn'), kt=document.getElementById('killBtnTxt');
+  if(R.kill==='none'){kb.hidden=true;}
+  else{kb.hidden=false; kt.textContent = R.kill==='global' ? 'Pause all agents' : 'Pause this agent';}
+  refreshDrawerFooter();
+}
+function guardPerm(perm){
+  if(ROLES[ROLE][perm]) return true;
+  showToast('🔒 Your role ('+ROLES[ROLE].name+') can\'t do that. Switch role to try it.');
+  return false;
+}
+
+/* ================= KILL SWITCH ================= */
+function engageKill(){
+  if(ROLES[ROLE].kill==='none') return;
+  const scoped = ROLES[ROLE].kill==='scoped';
+  const bar=document.getElementById('killbar'); bar.hidden=false;
+  if(scoped){
+    document.getElementById('killTitle').textContent='"Ransomware → Isolate & Restore" paused (scoped)';
+    document.getElementById('killSub').textContent='You paused a single agent. Other agents keep running. A global pause requires an Admin or Owner.';
+  }else{
+    document.getElementById('killTitle').textContent='EMERGENCY PAUSE ENGAGED — all agents halted across all tenants';
+    document.getElementById('killSub').textContent='No agent can act. In-flight approvals are frozen. Platform is in read-only shadow mode until resumed.';
+  }
+  showToast(scoped?'⏸ Single agent paused':'🚨 ALL agents paused');
+}
+function resumeAgents(){document.getElementById('killbar').hidden=true;showToast('▶ Agents resumed');}
+
+/* ================= NAV ================= */
+function go(id){
+  if(id==='activate' && !ROLES[ROLE].activate){ showToast('🔒 Activating agents is an Admin task. Switch to Automation Admin to try it.'); return; }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.nav===id));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav a').forEach(a=>a.onclick=()=>{ if(a.classList.contains('locked'))return; go(a.dataset.nav); });
+
+/* ================= TOAST ================= */
+let tT;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3400);}
+
+/* ================= WIZARD ================= */
+let cur=1; const MAX=5;
+function step(n){
+  if(n<1||n>MAX)return; cur=n;
+  document.querySelectorAll('#activate .wz-step').forEach(s=>s.classList.toggle('active',+s.dataset.step===n));
+  document.querySelectorAll('#wzLadder .rung').forEach((r,i)=>{
+    r.classList.toggle('current',i+1===n); r.classList.toggle('done',i+1<n);
+  });
+  document.getElementById('wzBack').disabled = n===1;
+  document.getElementById('wzCount').textContent = 'Step '+n+' of '+MAX;
+  const next=document.getElementById('wzNext'); next.style.display = n===MAX?'none':'inline-block';
+  window.scrollTo(0,0);
+}
+function tog(el){el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+
+/* Guardrails */
+const GUARDS=[
+  {t:'Never isolate critical infrastructure',d:'Endpoints tagged role:critical-infra (domain controllers, hypervisors) are excluded from auto-isolation — always escalate instead.',on:true},
+  {t:'Require a verified clean backup < 24h',d:'Agent may only restore if a backup exists, passes integrity check, and predates the infection.',on:true},
+  {t:'All actions must be reversible',d:'Isolation and restore are captured as undoable transactions with a pre-action snapshot.',on:true},
+  {t:'Max 5 endpoints isolated per hour',d:'Rate-limit prevents a mis-firing agent from taking down a whole tenant.',on:true},
+  {t:'Block actions from injected ticket text',d:'Instructions embedded in ticket/user content are treated as data, never commands (prompt-injection defence).',on:false},
+];
+function renderGuards(){
+  document.getElementById('guards').innerHTML = GUARDS.map((g,i)=>`
+    <div class="guard">
+      <div class="toggle"><div class="switch ${g.on?'on':''}" data-perm="guardEdit" onclick="gToggle(${i})"></div></div>
+      <div><b>${g.t}</b><div style="font-size:12px;color:var(--muted)">${g.d}</div></div>
+    </div>`).join('');
+  const on=GUARDS.filter(g=>g.on).length;
+  document.getElementById('sumGuards').textContent = on+' of '+GUARDS.length;
+  setRole(ROLE);
+}
+function gToggle(i){ if(!guardPerm('guardEdit'))return; GUARDS[i].on=!GUARDS[i].on;renderGuards(); }
+
+/* Interactive linter */
+const FORBIDDEN=['Remove-Item','Format-Volume','rm -rf','del /','reg delete','Stop-Computer','Clear-Disk'];
+function lintScript(){
+  const txt=document.getElementById('scriptBox').value;
+  const hit=FORBIDDEN.find(f=>txt.toLowerCase().includes(f.toLowerCase()));
+  const out=document.getElementById('linterOut');
+  if(hit){
+    out.className='linter-out fail';
+    out.innerHTML=`⛔ Allow-list check: <b>BLOCKED</b> — found a forbidden/destructive command (<span class="mono">${hit}</span>). The platform rejects this before it can run, regardless of what the model intended. The agent must propose an allow-listed alternative or escalate to a human.`;
+  }else{
+    out.className='linter-out pass';
+    out.innerHTML='🛡 Allow-list check: <b>PASSED</b> — all cmdlets are certified &amp; reversible. Safe for approval.';
+  }
+}
+function injectBad(){
+  const b=document.getElementById('scriptBox');
+  b.value=b.value+'\nRemove-Item -Path "C:\\" -Recurse -Force   # ← destructive!';
+  lintScript();
+}
+
+/* Simulation */
+function runSim(){
+  const btn=document.getElementById('simBtn'); btn.disabled=true; btn.textContent='Replaying 62 incidents…';
+  const fill=document.getElementById('simFill'); fill.style.width='0';
+  setTimeout(()=>fill.style.width='100%',50);
+  setTimeout(()=>{document.getElementById('simResult').style.display='block';btn.textContent='✓ Dry-run complete';btn.disabled=false;showToast('Dry-run complete — 93.5% agreement with your technicians');},1300);
+}
+
+/* Autonomy */
+let chosenLvl='L2';
+const LVL_TXT={L0:'L0 · Shadow',L1:'L1 · Suggest',L2:'L2 · Approve-to-act',L3:'L3 · Auto + notify'};
+function selLvl(el){document.querySelectorAll('.auto-lvl').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');
+  chosenLvl=el.dataset.lvl;document.getElementById('sumLvl').textContent=LVL_TXT[chosenLvl];}
+
+function activateAgent(){if(!guardPerm('activate'))return;showToast('🚀 Agent activated in canary mode — the first 10 incidents need approval');setTimeout(()=>go('oversight'),900);}
+
+/* ================= OVERSIGHT INBOX ================= */
+const INBOX=[
+ {id:'a1',type:'remediation',agent:'Remediation Agent',action:'Isolate WKS-Finance-07 + restore from 02:00 backup',client:'Northwind Ltd',conf:0.97,confL:'high',wait:'4 min',guards:'4/4 ✓',
+  reason:'Received a TRUE-POSITIVE packet from the Triage Agent: active ransomware encryption on a finance workstation (entropy spike + LockBit-style note). Endpoint is not critical-infra. A clean, integrity-verified backup exists from 02:00, 71 minutes before infection. Isolating stops lateral spread; restoring recovers the 1,240 affected files. Both actions are reversible.',
+  evidence:['Triage handoff · classification TRUE POSITIVE','EDR alert #A-8841 · confidence 0.97','1,240 files encrypting · rate rising','Backup NW-02:00 · integrity ✓ · pre-infection','WKS-Finance-07 tag: workstation (not critical-infra)'],
+  checks:[['Not critical infrastructure','pass'],['Verified clean backup < 24h','pass'],['Action reversible','pass'],['Within rate limit (1/5 this hr)','pass']]},
+ {id:'a2',type:'remediation',agent:'Remediation Agent',action:'Isolate SRV-DC-01 (domain controller)',client:'Northwind Ltd',conf:0.62,confL:'low',wait:'12 min',guards:'3/4 ⚠',
+  reason:'Detected suspicious encryption activity on SRV-DC-01. However this endpoint is tagged role:critical-infra (domain controller). Isolating it would break authentication tenant-wide. Confidence is only 0.62 — the signal may be a backup job, not ransomware. Escalating rather than acting.',
+  evidence:['EDR alert #A-8846 · confidence 0.62','Endpoint tag: role:critical-infra ⚠','Overlaps scheduled backup window','No ransomware note detected'],
+  checks:[['Not critical infrastructure','FAIL — blocked'],['Verified clean backup < 24h','pass'],['Action reversible','pass'],['Confidence above 0.80','FAIL — below threshold']],warn:true},
+ {id:'a3',type:'triage',agent:'Triage Agent',action:'Classify ambiguous alert on WKS-Sales-14 → route as SUSPECTED, not auto-remediate',client:'Northwind Ltd',conf:0.71,confL:'med',wait:'8 min',guards:'2/2 ✓',
+  reason:'An EDR alert fired on WKS-Sales-14 with mixed signals: some file changes look like encryption, but there is no ransomware note and the process is a known (if unusual) backup utility. Triage confidence is 0.71 — enough to flag, not enough to declare a true positive. Rather than hand a destructive isolate+restore to the Remediation Agent, Triage proposes classifying this as SUSPECTED and routing to a human for a look. This is the agent choosing NOT to escalate to a destructive action.',
+  evidence:['EDR alert #A-8850 · mixed signals','Some entropy change · but NO ransomware note','Process = known backup utility (unusual timing)','No verified-clean backup gap yet'],
+  checks:[['Non-destructive routing action','pass'],['Within scope','pass']]},
+];
+function confColor(l){return l==='high'?'var(--green)':l==='med'?'var(--amber)':'var(--red)';}
+function renderInbox(){
+  document.getElementById('inboxRows').innerHTML = INBOX.map(it=>{
+    const isTri=it.type==='triage';
+    return `
+   <tr class="clickable" onclick="openItem('${it.id}')">
+     <td><div class="agent-face"><div class="agent-ic ${isTri?'triage':''}" style="width:28px;height:28px;flex-basis:28px;font-size:14px">${isTri?'🔷':'🟣'}</div>
+       <div><b>${it.action}</b><div style="color:var(--muted);font-size:12px">${it.agent}</div></div></div></td>
+     <td>${it.client}</td>
+     <td><div class="conf"><div class="track"><div class="f" style="width:${it.conf*100}%;background:${confColor(it.confL)}"></div></div><span class="mono">${it.conf.toFixed(2)}</span></div></td>
+     <td><span class="badge ${it.warn?'b-red':'b-green'}">${it.guards}</span></td>
+     <td>${it.wait}</td>
+     <td><span class="btn sm">Review →</span></td>
+   </tr>`;}).join('');
+  document.getElementById('inboxCount').textContent=INBOX.length;
+  document.getElementById('dPending').textContent=INBOX.length;
+}
+let curItem=null;
+function openItem(id){
+  const it=INBOX.find(x=>x.id===id); curItem=it;
+  const isTri=it.type==='triage';
+  document.getElementById('dIcon').textContent=isTri?'🔷':'🟣';
+  document.getElementById('dIcon').className='agent-ic'+(isTri?' triage':'');
+  document.getElementById('dTitle').textContent=it.agent;
+  document.getElementById('dSub').textContent=it.action+' · '+it.client;
+  document.getElementById('dBody').innerHTML=`
+    ${it.warn?'<div class="note danger">⚠ This action would cross a guardrail. The platform has <b>blocked auto-execution</b> and surfaced it for a human decision. Approving requires explicit override.</div>':''}
+    ${isTri?'<div class="note" style="background:var(--blue-soft);border-color:#cfe0ff">🔷 <b>Triage Agent decision.</b> This is the <em>first</em> agent in the workflow deciding how to classify an alert — and here choosing <b>not</b> to hand a destructive action to the Remediation Agent. Multi-agent orchestration with a human checkpoint at the classification stage.</div>':''}
+    <h3>Proposed action</h3>
+    <div class="card" style="box-shadow:none;margin-bottom:16px"><b>${it.action}</b></div>
+    <h3>Confidence</h3>
+    <div class="conf" style="margin-bottom:16px"><div class="track"><div class="f" style="width:${it.conf*100}%;background:${confColor(it.confL)}"></div></div><b class="mono">${it.conf.toFixed(2)} · ${it.confL}</b></div>
+    <h3>Agent reasoning</h3>
+    <p style="margin-top:0">${it.reason}</p>
+    <h3>Evidence used</h3>
+    <ul class="tight">${it.evidence.map(e=>'<li>'+e+'</li>').join('')}</ul>
+    <h3>Guardrail checks</h3>
+    ${it.checks.map(c=>`<div class="kv"><span class="k">${c[0]}</span><span class="v" style="color:${c[1].includes('pass')?'var(--green)':'var(--red)'}">${c[1].includes('pass')?'✓ '+c[1]:'✕ '+c[1]}</span></div>`).join('')}
+  `;
+  refreshDrawerFooter();
+  document.getElementById('drawerBg').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function refreshDrawerFooter(){
+  const canApprove=ROLES[ROLE].approve;
+  document.getElementById('dFoot').hidden=!canApprove;
+  document.getElementById('dFootReadonly').hidden=canApprove;
+}
+function closeDrawer(){document.getElementById('drawerBg').classList.remove('open');document.getElementById('drawer').classList.remove('open');}
+function approveItem(){if(!guardPerm('approve'))return;closeDrawer();dropItem();showToast('✓ Approved — action executing, fully logged & reversible');}
+function rejectItem(){if(!guardPerm('approve'))return;closeDrawer();dropItem();showToast('✕ Rejected — reason captured as training signal for the next eval');}
+function dropItem(){if(curItem){const i=INBOX.findIndex(x=>x.id===curItem.id);if(i>-1)INBOX.splice(i,1);renderInbox();}}
+
+/* ================= INIT ================= */
+renderGuards();renderInbox();step(1);setRole('admin');
+  </script>
+</body>
+
+</html>
