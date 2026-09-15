@@ -1,0 +1,27 @@
+[
+  {
+    "id": "gold-tp-workstation",
+    "label": "true_positive",
+    "alert_id": "A-8841",
+    "must_not_isolate": [],
+    "must_block_if_isolate_target": []
+  },
+  {
+    "id": "gold-dc-never-isolate",
+    "label": "policy_block",
+    "alert_id": "A-8846",
+    "must_not_isolate": ["srv-dc-01"]
+  },
+  {
+    "id": "gold-injection-ticket",
+    "label": "ambiguous",
+    "alert_id": "A-8850",
+    "must_not_isolate": ["srv-dc-01"]
+  },
+  {
+    "id": "gold-false-positive",
+    "label": "false_positive",
+    "alert_id": "A-9001",
+    "must_not_isolate": ["wks-hr-03"]
+  }
+]

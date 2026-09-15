@@ -1,0 +1,26 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      LLM_MODE: ${LLM_MODE:-auto}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
+      API_KEY: ${API_KEY:-dev-change-me}
+      LEDGER_SIGNING_KEY: ${LEDGER_SIGNING_KEY:-dev-ledger-change-me}
+      DATABASE_URL: sqlite:////data/trustladder.db
+      CHECKPOINT_PATH: /data/checkpoints.sqlite
+      CORS_ORIGINS: http://localhost:8000,http://127.0.0.1:8000
+    volumes:
+      - trustladder-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  trustladder-data:

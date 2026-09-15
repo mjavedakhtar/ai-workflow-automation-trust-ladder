@@ -2,3 +2,21 @@
 .DS_Store
 .agents/
 private/
+
+# Secrets and local runtime
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local databases and checkpoints
+*.db
+*.sqlite
+*.sqlite3
+backend/data/runtime/
+backend/app/data/mitre_cache.json

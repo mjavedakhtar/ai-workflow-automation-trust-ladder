@@ -1,0 +1,13 @@
+{
+  "technique_id": "T1486",
+  "name": "Data Encrypted for Impact",
+  "tactics": ["impact"],
+  "source": "MITRE ATT&CK (vendored excerpt — not a live scrape)",
+  "url": "https://attack.mitre.org/techniques/T1486/",
+  "summary": "Adversaries encrypt files on target systems to interrupt availability. Common signals include rapid high-entropy writes, ransom notes, and known encryptor families. Isolation plus restore from a clean pre-infection backup is a standard containment pattern — domain controllers and other critical infrastructure must not be isolated automatically.",
+  "detection_hints": [
+    "Rapid file modification / entropy spike",
+    "Ransom note artifacts",
+    "Known ransomware process or extension patterns"
+  ]
+}

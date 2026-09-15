@@ -2114,8 +2114,60 @@ function approveItem(){if(!guardPerm('approve'))return;closeDrawer();dropItem();
 function rejectItem(){if(!guardPerm('approve'))return;closeDrawer();dropItem();showToast('✕ Rejected — reason captured as training signal for the next eval');}
 function dropItem(){if(curItem){const i=INBOX.findIndex(x=>x.id===curItem.id);if(i>-1)INBOX.splice(i,1);renderInbox();}}
 
+/* ================= LIVE API (optional) ================= */
+const API_BASE = (() => {
+  const q = new URLSearchParams(location.search).get('api');
+  if (q) return q.replace(/\/$/, '');
+  if (location.pathname.indexOf('/prototype') === 0) return location.origin;
+  return '';
+})();
+const API_KEY = new URLSearchParams(location.search).get('key') || localStorage.getItem('TRUST_LADDER_API_KEY') || 'dev-change-me';
+function apiHeaders(){
+  const role = document.getElementById('roleSel')?.value || ROLE;
+  return {'X-API-Key': API_KEY, 'X-Role': role, 'X-User-Id': 'arjun', 'X-Tenant-Id': 'northwind', 'Content-Type': 'application/json'};
+}
+async function liveInbox(){
+  if(!API_BASE) return;
+  try{
+    const health = await fetch(API_BASE+'/v1/health').then(r=>r.json());
+    const box = await fetch(API_BASE+'/v1/oversight', {headers: apiHeaders()}).then(r=>r.json());
+    if(!box.items) return;
+    if(!box.items.length){ showToast('Live API · LLM='+(health.llm||'?')+' · no pending runs — showing demo inbox'); return; }
+    showToast('Live API · LLM='+(health.llm||'?')+' · '+box.items.length+' pending');
+    INBOX.length = 0;
+    box.items.forEach(it=>{
+      INBOX.push({
+        id: it.id, type: it.kind==='triage'?'triage':'remediation',
+        agent: it.kind==='triage'?'Triage Agent':'Remediation Agent',
+        action: it.action, client: it.client, conf: it.conf||0, confL: (it.conf||0)>0.85?'high':(it.conf||0)>0.7?'med':'low',
+        wait: 'live', guards: it.passed===false?'blocked':((it.guards||[]).filter(g=>g.passed).length+'/'+(it.guards||[]).length),
+        reason: it.reasoning||'', evidence: it.evidence||[],
+        checks: (it.guards||[]).map(g=>[g.rule, g.passed?'pass':g.detail]),
+        warn: it.passed===false
+      });
+    });
+    renderInbox();
+  }catch(e){ console.warn('Live API unavailable', e); }
+}
+const _approve = approveItem, _reject = rejectItem;
+approveItem = async function(){
+  if(API_BASE && curItem){
+    if(!guardPerm('approve')) return;
+    await fetch(API_BASE+'/v1/oversight/'+curItem.id+'/decide', {method:'POST', headers:apiHeaders(), body: JSON.stringify({decision:'approve'})});
+  }
+  _approve();
+};
+rejectItem = async function(){
+  if(API_BASE && curItem){
+    if(!guardPerm('approve')) return;
+    await fetch(API_BASE+'/v1/oversight/'+curItem.id+'/decide', {method:'POST', headers:apiHeaders(), body: JSON.stringify({decision:'reject', reason:'rejected from prototype'})});
+  }
+  _reject();
+};
+
 /* ================= INIT ================= */
 renderGuards();renderInbox();step(1);setRole('admin');
+liveInbox();
   </script>
 </body>
 
